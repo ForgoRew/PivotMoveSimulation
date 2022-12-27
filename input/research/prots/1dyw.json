@@ -1,0 +1,18 @@
+{ 
+    "TypeOfSimulation": "Pivot-ChainMoves",
+    "TypeOfPotential": "Lennard-Jones",
+    "SimulationMatrixFileName": "AZ-Tanaka.csv",
+    "FASTAFileName": "1dyw.fasta",
+    "BallDiameter": 5,
+    "NumberOfCycles": 17400000,
+    "NumberOfSkippedCycles": 8700000,
+    "Temperature-Init": 500,
+    "Temperature-Final": 300,
+    "BendingPotentialTableName": "bendingPotential.csv",
+    "DihedralPotentialTableName": "dihedralPotential.csv",
+    "RotationRange": 0.5,
+    "LengthOfBond": 3.81,
+    "XYZFreq": 100,
+    "DATAFreq": 100,
+    "RenderTCL": false
+}
