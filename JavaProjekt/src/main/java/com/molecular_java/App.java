@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -361,7 +359,9 @@ class App
 
         notePositions(s);
         countAndNoteAll(s);
-        noteDistances(s);
+        
+        // The distances stay the same!
+        //noteDistances(s);
 
         s.st.CountAdditionalParams(s);
 
@@ -455,7 +455,7 @@ class App
                 System.out.println(String.format("%d/%d (%d", s.v.cycle, s.numberOfCycles, (int) (s.v.cycle/s.numberOfCycles*100))+"%)");
             if (s.v.cycle % s.noteFreq == 0){
                 notePositions(s);
-                noteDistances(s);
+                //noteDistances(s);
             }
 
         }
@@ -470,22 +470,7 @@ class App
                 ( Double.valueOf(s.v.mcAccepted)/Double.valueOf(s.numberOfCycles) ) // Ratio of accepted by MonteCarlo step
         ));
     }
-    private static void noteDistances(SimSpace s) throws IOException {
-        StringBuilder str = new StringBuilder("% Distances in step ");
-        str.append(s.v.cycle);
-        str.append(":");
-        s.distanceFile.writeLine(str.toString());
-        for(int j = 0; j<s.balls.size()-1; j++)
-            s.distanceFile.writeLine("Ball " + String.valueOf(j) + " & ball "
-                    + String.valueOf(j+1) + ": "
-                    + String.valueOf(
-                        new BigDecimal(
-                            Physics.distanceOfTwoBalls(s, s.balls.get(j), s.balls.get(j+1)))
-                                // Round on 'newScale' places
-                                .setScale(5,RoundingMode.HALF_UP)
-                    )
-            );
-    }
+
     /**
      * The main method for the simulation.
      * For each argument with a name of simulation, the simulation is being run.
@@ -575,8 +560,6 @@ class App
                 s.dataFile.close();
                 s.xyzFile.close();
                 s.avgFile.close();
-                s.distanceFile.close();
-
 
                 writeLog(s);
 

@@ -48,8 +48,10 @@ public class SimSpace
     public MyWriter xyzFile;
     /**avg file writer. */
     public MyWriter avgFile;
-    /**Distance file writer. Format similar to a xyz file format. */
-    public MyWriter distanceFile;
+    /*Distance file writer. Format similar to a xyz file format. 
+     * Not used anymore
+    */
+    //public MyWriter distanceFile;
     /**Dog file writer. It has information from the input file stored in,
      * Dvg file content and errors
      */
@@ -196,7 +198,8 @@ public class SimSpace
         dataFile = new MyWriter( new BufferedWriter(new FileWriter (dataFileName + ".csv")));
         xyzFile = new MyWriter( new BufferedWriter(new FileWriter (dataFileName + ".xyz")));
         avgFile = new MyWriter( new BufferedWriter(new FileWriter (dataFileName + ".avg.csv")));
-        distanceFile = new MyWriter( new BufferedWriter(new FileWriter (dataFileName + ".dist")));
+        // Distances are not count anymore.
+        //distanceFile = new MyWriter( new BufferedWriter(new FileWriter (dataFileName + ".dist")));
         logFile = new MyWriter( new BufferedWriter(new FileWriter (dataFileName + ".log")));
 
         tclScript = new MyWriter( new BufferedWriter(new FileWriter (dataFileName + ".tcl")));
@@ -294,6 +297,14 @@ public class SimSpace
         }
         return mapping;
     }
+    
+    /** 
+     * Method loads the matrix of non bonding epsilons specific for each combination of the AA types.
+     * @param matrixFile
+     * @param AAs
+     * @return double[][]
+     * @throws OperationNotSupportedException
+     */
     private double[][] LoadNonBondPotentialMatrixFromCsv(BufferedReader matrixFile, String AAs) throws OperationNotSupportedException {
         int nrAAs = AAs.split(",").length;
         double[][] matrix = new double[nrAAs][nrAAs];
@@ -329,6 +340,10 @@ public class SimSpace
         inputFile.readLine();
         return inputFile.readLine();
     }
+    
+    /** 
+     * @throws IOException
+     */
     public void makeTclScript() throws IOException {
         String header = 
         """

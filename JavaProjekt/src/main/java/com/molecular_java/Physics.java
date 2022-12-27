@@ -290,6 +290,15 @@ public class Physics
         }
         return sum;
     }
+    
+    /** 
+     * Method counts angle between the tree given balls.
+     * @param ball1
+     * @param ball_middle
+     * @param ball2
+     * @return double
+     * @throws OperationNotSupportedException
+     */
     public static double angle(Ball ball1, Ball ball_middle, Ball ball2) throws OperationNotSupportedException
     {
         double[] v = new double[]{ ball1.coordinates[0]-ball_middle.coordinates[0],
@@ -376,6 +385,13 @@ public class Physics
         else
             return Math.abs(absDifference-Math.PI*2);
     }
+    
+    /** 
+     * Method counts a vector between two given points (3D).
+     * @param point1
+     * @param point2
+     * @return double[]
+     */
     static double[] vectorBetweenTwoPoints(Double[] point1, Double[] point2){
         return new double[]{point2[0]-point1[0], point2[1]-point1[1], point2[2]-point1[2]};
     }
@@ -690,6 +706,14 @@ public class Physics
         };
         return matrixor;
     }
+    
+    /** 
+     * Method counts dihedral potential in the given list of balls.
+     * @param s
+     * @param balls
+     * @return double
+     * @throws OperationNotSupportedException
+     */
     static double dihedralPotentialInSystem(SimSpace s, ArrayList<Ball> balls) throws OperationNotSupportedException{
         Double sum = 0d;
         // Go for each dihedral angle.

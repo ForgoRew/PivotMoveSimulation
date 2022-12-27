@@ -78,6 +78,12 @@ public class StepVars {
         boltzman = Double.NaN;
     }
 
+    
+    /** 
+     * In this method some additional parameters about the simulation are count.
+     * @param s
+     * @throws OperationNotSupportedException
+     */
     public void CountAdditionalParams(SimSpace s) throws OperationNotSupportedException {
         /**Gyration radius and distance between the last and the first ball in the system. */
         Rg = Physics.radiusOfGyration(s);
