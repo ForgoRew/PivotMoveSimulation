@@ -1,26 +1,33 @@
-# MolecularSimulations in Java
+# PivotMoves
 ## Uživatelská dokumentace programu
 
 **Autor: Miloš Halda**  
 [Programátorská dokumentace.](Pages/index.html)
 
 ***Obsah:***
- - [MolecularSimulations in Java](#molecularsimulations-in-java)
+- [PivotMoves](#pivotmoves)
   - [Uživatelská dokumentace programu](#uživatelská-dokumentace-programu)
     - [Účel programu](#účel-programu)
     - [Popis základní struktury programu](#popis-základní-struktury-programu)
+      - [Inicializace](#inicializace)
+      - [Běh](#běh)
+      - [Ukončení běhu a postprocessing](#ukončení-běhu-a-postprocessing)
     - [Součásti programu](#součásti-programu)
+      - [Datové struktury:](#datové-struktury)
     - [Návod na použití](#návod-na-použití)
-      - [Vstupní soubor](#vstupní-soubor)
+      - [Vstupní soubory](#vstupní-soubory)
+        - [Umístění souboru a formát názvu](#umístění-souboru-a-formát-názvu)
+        - [Formát vstupního souboru](#formát-vstupního-souboru)
       - [Spuštění programu](#spuštění-programu)
       - [Výstupy](#výstupy)
+    - [Výsledky](#výsledky)
 
 ### Účel programu
-
-Program je určený k provádění molekulových simulací pomocí algoritmu Pivot-Chain Moves. Vytváří relativně realistický model foldingu peptidového řetězce, měří důležité systémové veličiny a zpracovává simulační data.
+Tento program je určený pro testování potenciálových funkcí. Program využívá zjednodušený model proteinu (coarse-grained). Protein je zjednodušený na aminokyseliny reprezentované jako koule se středem v $C_\alpha$ uhlících a konstantním poloměrem. Jako návrh stavu je využito náhodné otočení části řetězce okolo pivota. K vyhodnocení návrhu stavu je použita metoda Monte Carlo.
+<!-- TODO: Asi bude brzy změna v LJ -->
+Program v současnosti využívá Lennard-Jonesův potenciál jako funkci pro nevazebný potenciál. Pro bending a dihedrální potenciál program využívá funkce získané pomocí Boltzmannovy inverze, nicméně přijme jakoukoli funkci v požadovaném formátu, viz sekce ["Vstupní soubory"](#vstupní-soubory). Program je také snadno uživatelsky přístupný pro člověka zvyklého pracovat s příkazovou řádkou a dostatečně jednoduchý, aby bylo možné jej dále vylepšovat a snadno upravovat. Program zaznamenává důležité údaje v simulaci a měří průměry a chyby u důležitých hodnot.
 
 ### Popis základní struktury programu
-
 #### Inicializace
 Program přijme jako argumenty názvy simulace. Ze vstupního souboru načte parametry simulace:
 - typ výpočtu potenciálu,
@@ -67,7 +74,7 @@ Program se skládá z 10 tříd. Z programátorského hlediska jsou popsány bl�
 Prakticky všechna data jsou většinu času uložena v textových souborech, kam se průběžně zapisují. V textových souborech je vstup (přípona .in), nezpracovaná data simulace (.csv), souřadnice molekul během simulace (.xyz), průměry veličin (.avg.csv) a výstupní soubor (.log), který obsahuje důležité údaje ze vstupu i z výsledků simulace (průměry, chyby a simulační čas). Ze vstupu jsou data uložena do několika proměnných a poté také jako parametry třídy Ball a SimulationBox. Program má za účel simulaci libovolného množství molekul jednoho typu, které jsou reprezentovány objekty třídy Ball, v simulačním prostoru (úsečka, čtverec, krychle), který je reprezentovaný třídou SimulationBox. Objekty třídy Ball jsou uloženy v objektu třídy `ArrayList`.
 
 ### Návod na použití
-#### Vstupní soubor
+#### Vstupní soubory
 Ke spuštění programu je kromě Javy potřeba mít připravený vstupní soubor.
 
 ##### Umístění souboru a formát názvu
