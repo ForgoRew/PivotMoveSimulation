@@ -18,9 +18,13 @@
       - [Vstupní soubory](#vstupní-soubory)
         - [Umístění souboru a formát názvu](#umístění-souboru-a-formát-názvu)
         - [Formát vstupního souboru](#formát-vstupního-souboru)
+      - [Soubory s potenciálovými funkcemi](#soubory-s-potenciálovými-funkcemi)
+      - [Soubor s `FASTA` sekvencí simulovaného proteinu](#soubor-s-fasta-sekvencí-simulovaného-proteinu)
+      - [Soubor s AK specifickými epsilony](#soubor-s-ak-specifickými-epsilony)
       - [Spuštění programu](#spuštění-programu)
       - [Výstupy](#výstupy)
     - [Výsledky](#výsledky)
+    - [Zobrazení průběhu simulace ve VMD](#zobrazení-průběhu-simulace-ve-vmd)
 
 ### Účel programu
 Tento program je určený pro testování potenciálových funkcí. Program využívá zjednodušený model proteinu (coarse-grained). Protein je zjednodušený na aminokyseliny reprezentované jako koule se středem v $C_\alpha$ uhlících a konstantním poloměrem. Jako návrh stavu je využito náhodné otočení části řetězce okolo pivota. K vyhodnocení návrhu stavu je použita metoda Monte Carlo.
@@ -75,59 +79,63 @@ Program se skládá z 10 tříd. Z programátorského hlediska jsou popsány bl�
 #### Datové struktury
 Prakticky všechna data jsou většinu času uložena v textových souborech, kam se průběžně zapisují. V souborech jsou vstupní soubory (přípona .json, v případě tabulky s epsilony a potenciály přípona .csv), nezpracovaná data simulace (.csv), souřadnice molekul během simulace (.xyz), průměry veličin (.avg.csv) a výstupní soubor (.log), který obsahuje důležité údaje ze vstupu i z výsledků simulace (průměry, chyby a simulační čas). Ze vstupu jsou data uložena do proměnných a poté také jako parametry třídy Ball a především do objektu `SimSpace`. Objekt třídy SimSpace (v kódu zpravidla pojmenovaný jako `s`) hraje během simulace centrální roli, protože obsahuje všechny důležité parametry aktuálního stavu simulace a pomocí něj jsou tyto hodnoty předávány i metodám. Program má za účel simulaci libovolného množství molekul jednoho typu, které jsou reprezentovány objekty třídy Ball, v simulačním prostoru. Objekty třídy Ball jsou uloženy v objektu třídy `ArrayList` nazvaný `balls` a jsou atributem objektu `s` třídy SimSpace.
 
+<!-- Snížit úrovně nadpisů... -->
 ### Návod na použití
 #### Vstupní soubory
-Ke spuštění programu je kromě Javy potřeba mít připravený vstupní soubor.
+Ke spuštění programu je kromě Javy potřeba mít připravený vstupní soubor s parametry simulace a dále soubory, které jsou v něm definované.
 
 ##### Umístění souboru a formát názvu
-Vstupní soubor má název ve formátu `[název simulace].in`. Složka se vstupním souborem je buďto složka, kde běží program, nebo může být explicitně definována pomocí možností `-i` a `--input`
-Celkově tedy vůči pracovnímu adresáři musí být na "path" `./[název vstupní složky][název simulace].in`.
+Vstupní soubor má název ve formátu `[název simulace].json`. Složka se vstupním souborem je buďto složka, kde běží program, nebo může být explicitně definována pomocí možností `-i` a `--input`.
+Celkově tedy vůči pracovnímu adresáři musí být na "path" `./[název vstupní složky][název simulace].json`.
 
 ##### Formát vstupního souboru
-Vstupní formát má velmi specifický formát a není možné jej formátovat jinak. Místo popisu sem dám pro zjednodušení příklad vstupního souboru, na kterém také popíšu parametry simulace. Uvedený soubor simuluje balení peptidového řetězce délky 16.
+Vstupní soubor je ve formátu `JSON` a všechny položky uvedené v následujícím příkladu jsou nezbytné pro běh programu.
 
-Název souboru: `Test_n-32_c-3-200-000_range-0-3.in`
-```in
-Type of simulation: # Typ simulace -- v této verzi programu je na výběr pouze jedna možnost.
-Pivot-ChainMoves
-Type of potential: # Typ potenciálu. Jedna z těchto možností: ["Lennard-Jones", "Hard Spheres", "Square Well"]
-Lennard-Jones
-Simulation box side length [int]: # Délka strany simulačního boxu. Doporučené (n-kuliček * 4).
-64
-Dimension of space [int]: # Dimenze prostoru. Funguje pouze 3. Ve starší verzi programu byla podporována i možnost dvourozměrného prostoru.
-3
-Ball diameter [double]: # Poloměr kuliček. Nyní poloměr aminokyseliny.
-3.41
-Number of balls [int]: # Počet kuliček v řetězci.
-16
-Number of cycles [int]: # Počet cyklů simulace. Doporučuji (n-kuliček * 100000).
-1600000
-Number of skipped cycles [int]: # Počet přeskočených cyklů simulace. Přeskočené cykly se nezapočítávají do průměrů hodnot ani do odchylek.
-800000
-Epsilon [double]: # Reprezentuje dosah přitažlivé části potenciálu.
-0.4
-Lambda [double]: # Reprezentuje hloubku přitažlivé části potenciálu.
-2
-Beta [double]: # Udává jak snadno je přijat nepravděpodobný stav systému.
-1
-Factor for scaling while counting pressure [double]: # Faktor pro škálování prostoru při výpočtu tlaku v systému.
-0.9999
-Spring bond potential constant [double]: # Konstanta pro výpočet vazebného potenciálu.
-2000
-Range of angle for rotation [double]; <0,2]: # Rozsah otočení řetězce při jednom kroku simulace. Doporučuji rozsah <0,1]. Maximální hodnoty jsou 0 (řetězec se nebude otáčet vůbec) a 2 (může se otáčet libovolně)
-0.3
-Length of bound [double]: # Délka vazby mezi dvěma kuličkami.
-3.81
-Bending angle potential constant [double]: Konstanta pro úhlový potenciál.
-0.4
-Bending angle (*cos of angle*) [double]: Daný cosinus "nulového" úhlu (nemá žádné napětí)
--0.05
-XYZFreq [int]: # Udává kolikátý každý cyklus se zapíší souřadnice kuliček v systému.
-10000
-DATAFreq [int]: # Udává jednou za kolik cyklů se zapíší data ze simulace do výstupního souboru.
-10000
+Uvedený příklad je okomentovanou verzí vzorového vstupního souboru 
+
+
+Název souboru: `32Gly.in`
+```json
+{ 
+    # Typ simulace -- v této verzi programu je na výběr pouze jedna možnost.
+    "TypeOfSimulation": "Pivot-ChainMoves",
+    # Typ potenciálu. Jedna z těchto možností: ["Lennard-Jones", "Hard Spheres", "Square Well"]
+    "TypeOfPotential": "Lennard-Jones",
+    # Název matice pro AK specifické hodnoty `epsilon`:
+    "SimulationMatrixFileName": "AZ-Tanaka.csv",
+    # Název souboru s `FASTA` sekvencí simulovaného proteinu
+    "FASTAFileName": "32Gly.fasta",
+    # Poloměr kuliček. Nyní poloměr aminokyseliny:
+    "BallDiameter": 5,
+    # Počet cyklů simulace:
+    "NumberOfCycles": 40000,
+    # Počet cyklů pro ekvilibraci:
+    "NumberOfSkippedCycles": 20000,
+    Koeficient pro význam nevazebného potenciálu. Touto hodnotou je pronásobena hodnota nevazebného potenciálu během výpočtu potenciálu nového stavu. Jiné hodnoty než 1 jsou vhodné jen pro testování.
+    "EpsilonForNon-BondingPotential": 1,
+    # Parametr pro simulované žíhání. Počáteční teplota systému:
+    "Temperature-Init": 500,
+    # Parametr pro simulované žíhání. Hodnota teploty v posledním cyklu simulace. Hodnota teploty se mění v průběhu simulace lineárně.
+    "Temperature-Final": 300,
+    # Název souboru s bending potenciálem:
+    "BendingPotentialTableName": "bendingPotential.csv",
+    # Název souboru s dihedrálním potenciálem:
+    "DihedralPotentialTableName": "dihedralPotential.csv",
+    # Rozsah ve kterém bude náhodně vybírán úhel pro otočení během návrhu nového stavu:
+    "RotationRange": 0.5,
+    # Délka vazby mezi aminokyselinami (vzdálenost $C_\alpha$-$C_\alpha$)
+    "LengthOfBond": 3.81,
+    # Frekvence zápisu souřadnic aminokyselin do `.xyz` souboru:
+    "XYZFreq": 100,
+    # Frakvence zápisu dat do `.csv` souboru:
+    "DATAFreq": 100,
+    # Konfigurace pro vytváření `tcl` skriptu. V případě hodnoty `true` bude stav proteinu v posledním cyklu ve VMD rovnou vyrenderován.
+    "RenderTCL": false
+}
 ```
-
+#### Soubory s potenciálovými funkcemi
+#### Soubor s `FASTA` sekvencí simulovaného proteinu
+#### Soubor s AK specifickými epsilony
 #### Spuštění programu
 Obecně se program spustí příkazem:
 ```sh
@@ -185,3 +193,6 @@ Přestože to bez celého kontextu simulací nejde snadno pochopit, uvedu výsle
 |basic           |16     |1600000|6.158366 |4.782481    |0.000016|0.000080    |
 |basic           |32     |3200000|10.303139|20.047446   |0.000035|0.000135    |
 
+
+### Zobrazení průběhu simulace ve VMD
+<!-- TODO -->
