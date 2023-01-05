@@ -8,12 +8,12 @@
 - [PivotMoves](#pivotmoves)
   - [Uživatelská dokumentace programu](#uživatelská-dokumentace-programu)
     - [Účel programu](#účel-programu)
-    - [Popis základní struktury programu](#popis-základní-struktury-programu)
+    - [Popis základní struktury algoritmu simulace](#popis-základní-struktury-algoritmu-simulace)
       - [Inicializace](#inicializace)
       - [Běh](#běh)
       - [Ukončení běhu a postprocessing](#ukončení-běhu-a-postprocessing)
     - [Součásti programu](#součásti-programu)
-      - [Datové struktury:](#datové-struktury)
+      - [Datové struktury](#datové-struktury)
     - [Návod na použití](#návod-na-použití)
       - [Vstupní soubory](#vstupní-soubory)
         - [Umístění souboru a formát názvu](#umístění-souboru-a-formát-názvu)
@@ -27,14 +27,16 @@ Tento program je určený pro testování potenciálových funkcí. Program vyu�
 <!-- TODO: Asi bude brzy změna v LJ -->
 Program v současnosti využívá Lennard-Jonesův potenciál jako funkci pro nevazebný potenciál. Pro bending a dihedrální potenciál program využívá funkce získané pomocí Boltzmannovy inverze, nicméně přijme jakoukoli funkci v požadovaném formátu, viz sekce ["Vstupní soubory"](#vstupní-soubory). Program je také snadno uživatelsky přístupný pro člověka zvyklého pracovat s příkazovou řádkou a dostatečně jednoduchý, aby bylo možné jej dále vylepšovat a snadno upravovat. Program zaznamenává důležité údaje v simulaci a měří průměry a chyby u důležitých hodnot.
 
-### Popis základní struktury programu
+### Popis základní struktury algoritmu simulace
+Simulace probíhá ve 3 fázích, iniciace, běh a ukončení běhu. 
 #### Inicializace
-Program přijme jako argumenty názvy simulace. Ze vstupního souboru načte parametry simulace:
-- typ výpočtu potenciálu,
-- délku strany simulační krychle,
-- prostorovou dimenzi simulačního prostoru,
-- průměr kuliček, počet kuliček, počet cyklů simulace
-- etc.
+Program přijme jako argumenty názvy simulací, (volitelně) cestu ke složce se vstupními soubory a (volitelně) cestu s výstupními soubory. Ze vstupního souboru načte parametry simulace:
+- parametry pro výpočet LJ potenciálu,
+- soubory s hodnotami bending a dihedrálního potenciálu,
+- `FASTA` sekvenci simulovaného proteinu,
+- počet cyklů simulace,
+- frekvenci zaznamenávání dat simulace,
+- a další, viz [formát vstupního souboru](#formát-vstupního-souboru).
 
 Pomocí těchto veličin program vytvoří řetězec částic, který bude simulovat.
 
@@ -50,6 +52,7 @@ Program se skládá z 10 tříd. Z programátorského hlediska jsou popsány bl�
 - ***App***
   - hlavní třída s metodou main, volá ostatní funkce,
   - také jsou v ní uloženy některé metody pro zaznamenávání a postprocessing dat.
+  - obsahuje metodu ve které probíhá běh simulace (`pivotMovesSimulation`)
 - ***Ball***
   - objekty této třídy reprezentují částice v simulaci.
 - ***DataRange***
@@ -65,13 +68,12 @@ Program se skládá z 10 tříd. Z programátorského hlediska jsou popsány bl�
   - objekty této třídy slouží pro ukládání veličin důležitých pro konkrétní simulaci.
 - ***SimSpace***
   - objekt této třítdy reprezentuje simulační prostor se všemi jeho veličinami, vstupy a výstupy.
-- ***SimulationBox***
-  - reprezentuje box ve kterém simulace probíhá, jeho velikost a dimenzi prostoru.
 - ***StepVars***
   - objekty této třídy slouží pro ukládání veličin důležitých pro každý konkrétní krok běhu simulace.
 
-#### Datové struktury:
-Prakticky všechna data jsou většinu času uložena v textových souborech, kam se průběžně zapisují. V textových souborech je vstup (přípona .in), nezpracovaná data simulace (.csv), souřadnice molekul během simulace (.xyz), průměry veličin (.avg.csv) a výstupní soubor (.log), který obsahuje důležité údaje ze vstupu i z výsledků simulace (průměry, chyby a simulační čas). Ze vstupu jsou data uložena do několika proměnných a poté také jako parametry třídy Ball a SimulationBox. Program má za účel simulaci libovolného množství molekul jednoho typu, které jsou reprezentovány objekty třídy Ball, v simulačním prostoru (úsečka, čtverec, krychle), který je reprezentovaný třídou SimulationBox. Objekty třídy Ball jsou uloženy v objektu třídy `ArrayList`.
+<!-- TODO: `dát názvy tříd a příponů do těchto znaků` -->
+#### Datové struktury
+Prakticky všechna data jsou většinu času uložena v textových souborech, kam se průběžně zapisují. V souborech jsou vstupní soubory (přípona .json, v případě tabulky s epsilony a potenciály přípona .csv), nezpracovaná data simulace (.csv), souřadnice molekul během simulace (.xyz), průměry veličin (.avg.csv) a výstupní soubor (.log), který obsahuje důležité údaje ze vstupu i z výsledků simulace (průměry, chyby a simulační čas). Ze vstupu jsou data uložena do proměnných a poté také jako parametry třídy Ball a především do objektu `SimSpace`. Objekt třídy SimSpace (v kódu zpravidla pojmenovaný jako `s`) hraje během simulace centrální roli, protože obsahuje všechny důležité parametry aktuálního stavu simulace a pomocí něj jsou tyto hodnoty předávány i metodám. Program má za účel simulaci libovolného množství molekul jednoho typu, které jsou reprezentovány objekty třídy Ball, v simulačním prostoru. Objekty třídy Ball jsou uloženy v objektu třídy `ArrayList` nazvaný `balls` a jsou atributem objektu `s` třídy SimSpace.
 
 ### Návod na použití
 #### Vstupní soubory
