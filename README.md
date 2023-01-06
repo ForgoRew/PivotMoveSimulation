@@ -4,7 +4,8 @@
 **Autor: Miloš Halda**  
 [Bakalářská práce](BakalarkaSimProgram.pdf)  
 [Repo na GitHubu](https://github.com/ForgoRew/PivotMoveSimulation)  
-[Programátorská dokumentace (javadoc).](javadocs) -- je třeba je stáhnout a spustit v prohlížeči. GitHub neumožňuje náhled do nich.
+[Stránky projektu (GitHub pages)](https://forgorew.github.io/PivotMoveSimulation/)  
+[Programátorská dokumentace (javadoc).](https://forgorew.github.io/PivotMoveSimulation/javadocs/com/molecular_java/package-summary.html)  
 
 ***Obsah:***
 - [Účel programu](#účel-programu)
