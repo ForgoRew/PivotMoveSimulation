@@ -5,6 +5,7 @@
 [Programátorská dokumentace.](Pages/index.html)  
 [Bakalářská práce](BakalarkaSimProgram.pdf)  
 [Repo na GitHubu](https://github.com/ForgoRew/PivotMoveSimulation)  
+[JavaDocs](javadocs) -- je třeba je stáhnout a spustit v prohlížeči. GitHub neumožňuje náhled do nich.
 
 ***Obsah:***
 - [Účel programu](#účel-programu)
