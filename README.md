@@ -274,7 +274,7 @@ Výstupní soubory je pak možné najít ve složce, kde běží program, nebo v
 
 Jejich název je prakticky stejný jako název vstupního souboru jen s jinými příponami. Pro naší simulaci bychom našli tyto soubory:
 ```txt
-[název simulace].csv # Obsahuje průměry.
+[název simulace].avg.csv # Obsahuje průměry.
 [název simulace].csv # Obsahuje data ze simulace.
 [název simulace].log # Výstupní soubor.
 [název simulace].xyz # Soubor souřadnic molekul v prostoru. Je možné je zobrazit např. v programu VMD.
