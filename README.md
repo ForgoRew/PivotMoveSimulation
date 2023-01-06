@@ -18,10 +18,10 @@
   - [Vstupní soubory](#vstupní-soubory)
     - [Umístění souboru a formát názvu](#umístění-souboru-a-formát-názvu)
     - [Formát vstupního souboru](#formát-vstupního-souboru)
-  - [Soubor s AK specifickými epsilony](#soubor-s-ak-specifickými-epsilony)
-  - [Soubory s potenciálovými funkcemi](#soubory-s-potenciálovými-funkcemi)
-  - [Soubor s `FASTA` sekvencí simulovaného proteinu](#soubor-s-fasta-sekvencí-simulovaného-proteinu)
-  - [`XYZ` soubor pro možnost `--restore`](#xyz-soubor-pro-možnost---restore)
+    - [Soubor s AK specifickými epsilony](#soubor-s-ak-specifickými-epsilony)
+    - [Soubory s potenciálovými funkcemi](#soubory-s-potenciálovými-funkcemi)
+    - [Soubor s `FASTA` sekvencí simulovaného proteinu](#soubor-s-fasta-sekvencí-simulovaného-proteinu)
+    - [`XYZ` soubor pro možnost `--restore`](#xyz-soubor-pro-možnost---restore)
   - [Spuštění programu](#spuštění-programu)
   - [Výstupy](#výstupy)
 - [Výsledky](#výsledky)
@@ -147,7 +147,7 @@ Název souboru: `32Gly.in`
     "RenderTCL": false
 }
 ```
-### Soubor s AK specifickými epsilony
+#### Soubor s AK specifickými epsilony
 Soubor pro epsilony specifickými pro jednotlivé kombinace aminokyselin (jeho název je specifikován ve vstupním `JSON` souboru v položce "SimulationMatrixFileName") má následující formát:
 ```csv
 [řádek se značkami typů aminokyselin (musí se shodovat se značkami pro aminokyseliny v souboru `FASTA`)]
@@ -166,7 +166,7 @@ H,P
 
 Během testování programu byla využita matice upravená z [Tanaky 1976](input/vzory/AZ-Tanaka.csv). Protože se jedná o rozsáhlejší soubor, není zde vložena kvůli přehlednosti. Je možné ji najít ve [vzorové složce pro vstupní soubory](input/vzory/).
 
-### Soubory s potenciálovými funkcemi
+#### Soubory s potenciálovými funkcemi
 Soubory specifikované ve vstupním `JSON` souboru jako položky  
 `"BendingPotentialTableName"` a 
 `"DihedralPotentialTableName"` obsahují hodnoty potenciálů pro dané hodnoty úhlů. Při vytváření těchto souborů je potřeba mít na paměti, že bending potenciál je definován v intervalu $[0,\pi]$ a dihedrální potenciál v intervalu $[-\pi,\pi]$. Více o tomto problému je možné najít v mojí [bakalářské práci](BakalarkaSimProgram.pdf) v příslušných sekcích kapitoly "2 Metody".
@@ -197,7 +197,7 @@ Celé soubory [`dihedralPotential.csv`](input/vzory/bendingPotential.csv) a [`be
 
 <!-- TODO: Otestovat prokliky na složky na GitHubu -->
 
-### Soubor s `FASTA` sekvencí simulovaného proteinu
+#### Soubor s `FASTA` sekvencí simulovaného proteinu
 Soubor `FASTA` (položka `"FASTAFileName"` ve vstupním `JSON` souboru) obsahuje vstupní sekvenci aminokyselin. Je potřeba zkontrolovat, aby všechny uvedené značky aminokyselin byly také v headeru tabulky pro AK specifické hodnoty `epsilon`.
 
 Soubor má formát jako klasický `FASTA` soubor, jen není podstatný první řádek s informacemi o sekvenci:
@@ -217,7 +217,7 @@ GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 ARNDCQEGHILKMFPSTWYV
 ```
 
-### `XYZ` soubor pro možnost `--restore`
+#### `XYZ` soubor pro možnost `--restore`
 V případě, že je použita možnost `--restore` musí být ve vstupní složce i `XYZ` soubor, ze kterého budou "obnoveny" pozice aminokyselin v daném kroce simulace.
 
 Cesta ke vstupnímu souboru se počítá od vstupní složky:
