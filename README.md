@@ -21,11 +21,18 @@
       - [Soubor s AK specifickými epsilony](#soubor-s-ak-specifickými-epsilony)
       - [Soubory s potenciálovými funkcemi](#soubory-s-potenciálovými-funkcemi)
       - [Soubor s `FASTA` sekvencí simulovaného proteinu](#soubor-s-fasta-sekvencí-simulovaného-proteinu)
-      - [`TCL` soubor pro možnost `--restore`](#tcl-soubor-pro-možnost---restore)
+      - [`XYZ` soubor pro možnost `--restore`](#xyz-soubor-pro-možnost---restore)
       - [Spuštění programu](#spuštění-programu)
       - [Výstupy](#výstupy)
     - [Výsledky](#výsledky)
     - [Zobrazení průběhu simulace ve VMD](#zobrazení-průběhu-simulace-ve-vmd)
+    - [Tutoriál](#tutoriál)
+      - [Prerekvizity](#prerekvizity)
+      - [Spuštění simulace](#spuštění-simulace)
+      - [Využítí možnosti `--restore`](#využítí-možnosti---restore)
+      - [Zobrazení ve VMD](#zobrazení-ve-vmd)
+    - [Možné problémy!](#možné-problémy)
+      - [Chybějící `/` u vstupní/výstupní složky](#chybějící--u-vstupnívýstupní-složky)
 
 ### Účel programu
 Tento program je určený pro testování potenciálových funkcí. Program využívá zjednodušený model proteinu (coarse-grained). Protein je zjednodušený na aminokyseliny reprezentované jako koule se středem v $C_\alpha$ uhlících a konstantním poloměrem. Jako návrh stavu je využito náhodné otočení části řetězce okolo pivota. K vyhodnocení návrhu stavu je použita metoda Monte Carlo.
@@ -206,12 +213,18 @@ Jako příklad uvedu soubor s 32 glyciny v sekvenci:
 GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 ```
 
-#### `TCL` soubor pro možnost `--restore`
+či se všemi aminokyselinami:
+```fa
+>all-AKs
+ARNDCQEGHILKMFPSTWYV
+```
+
+#### `XYZ` soubor pro možnost `--restore`
 V případě, že je použita možnost `--restore` musí být ve vstupní složce i `XYZ` soubor, ze kterého budou "obnoveny" pozice aminokyselin v daném kroce simulace.
 
-Název souboru musí vypadat takto:
+Cesta ke vstupnímu souboru se počítá od vstupní složky:
 ```txt
-[vstupní složka][název simulace].restore.xyz
+[vstupní složka][název souboru]
 ```
 
 Tento soubor obsahuje pouze jeden "frame" (doporučená varianta), v případě, že obsahuje více "framů" bude vybrán automaticky **ten první v souboru**.
@@ -226,7 +239,7 @@ Formát souboru vypadá takto:
 [Kód aminokyseliny] [souřadnice x] [souřadnice y] [souřadnice z]
 ```
 
-Ukázkový [`.restore.xyz`](input/vzory/priklad.restore.xyz) soubor je ve složce příkladů.
+Ukázkový [restore soubor](input/vzory/priklad-restore.xyz) soubor je ve složce příkladů.
 
 #### Spuštění programu
 Obecně se program spustí příkazem:
@@ -280,10 +293,133 @@ Použijte příkaz ve tvaru:
 ```sh
 vmd -f [výstupní složka][název simulace].xyz -e [výstupní složka][název simulace].tcl
 ```
+Barvy kuliček odpovídají barevnému kódu jak je uveden v [bakalářské práci v kapitole 3 Výsledky](TODO).
 
 Pokud byla nastavena položka "RenderTCL" ve vstupním JSON souboru na `true`, VMD se zapne, vytvoří snapshot struktury a vypne se. Tomu je možné zabránit odstraněním příkazů, které následující po řádku
 ```tcl
 #RENDERING
 ```
 
-<!-- Udělat pořádně příklad, dát celou sekvenci aminokyselin -->
+Pro více informací je možné zadat `vmd --help` do příkazové řádky, nebo se podívat na [stránky VMD](https://www.ks.uiuc.edu/Research/vmd/).
+### Tutoriál
+
+Pro lepší pochopení je možné si přímo program vyzkoušet. Tutoriál je připravený **pro uživatele Linuxu**, při splnění prerekvizit s malými modifikacemi (např. lomítko `\` namísto `/`) tutoriál funguje také pro uživatele Windows, případně Mac OS.
+
+#### Prerekvizity
+1. stažené repository z GitHubu na počítač
+2. instalovaná Java 17 (respektive 8 pro downgradovanou verzi programu)
+3. instalované VMD (pro zobrazení hotového proteinu)
+#### Spuštění simulace
+Pokud jsme s příkazovou řádkou v hlavní složce projektu (`PivotMovesSimulation`), můžeme se podívat do složky `input/priklad/` pomocí příkazu 
+
+```sh
+ls input/vzory/
+```
+
+Pro vyčištění složky `data` před tutoriálem je možné spustit příkaz
+```sh
+rm -ri data/* # možnost 'i' je přidána kvůli bezpečnosti příkazu...
+```
+
+Zde jsou připravené vstupní soubory pro simulaci:
+1. `priklad.json`
+2. `all-aks.fasta`
+3. `bendingPotential.csv`
+4. `dihedralPotential.csv`
+5. `priklad-retore.xyz` - ten využijeme až při další fázi tutoriálu.
+
+a další soubory, které se mohou hodit např. při simulaci HP modelu.
+
+Dále je potřeba vytvořit složku na výstupy programu, např. příkazem
+```sh
+mkdir data/priklad
+```
+
+Program se nyní spustí pomocí příkazu:
+```sh
+java -jar PMSimulation/PMSimulation.jar -i input/vzory/ -o data/priklad/ priklad
+```
+
+Na výstupu se zobrazí postupně toto:
+```txt
+10000/40000 (25%)
+20000/40000 (50%)
+30000/40000 (75%)
+40000/40000 (100%)
+Simulation priklad: Was succesfull.
+```
+
+Nyní ve výstupní složce uvidíme 
+
+(např. pomocí příkazu)
+
+```sh
+ls data/priklad
+```
+vytvořené tyto soubory:
+1. `priklad.avg.csv`
+2. `priklad.csv`
+3. `priklad.log`
+4. `priklad.tcl`
+5. `priklad.xyz`
+
+Význam těchto souborů viz sekce [Vstupní soubory](#vstupní-soubory).
+
+#### Využítí možnosti `--restore`
+Pro využítí možnosti obnovy určitého stavu simulace je potřeba nejprve vytvořit soubor `priklad-retore.xyz`, např. příkazem 
+
+```sh
+touch input/vzory/priklad-restore.xyz # Tento příkaz je bezpečný a nijak nezmění obsah souboru, pokud již existuje.
+```
+
+Nyní do něj vložíme jeden kompletní frame ze souboru `data/priklad/priklad.xyz`. Od tohoto framu se bude simulovat. Funkční soubor jsem již vytvořil během psaní tohoto tutoriálu, takže můžete rovnou použít ten již existující.
+
+Program bude po spuštění fungovat stejně jako při prvním běhu, jen pozor, aby se nám nesmazala data z prvního běhu, je potřeba výstup přesměrovat do jiné složky!
+```
+mkdir data/restore
+```
+Samozřejmě můžeme i upravit vstupní `JSON` soubor (např. nastavit jen doplňkový počet kroků).
+Nyní už můžeme program spustit:
+```
+java -jar PMSimulation/PMSimulation.jar -i input/vzory/ -o data/restore/ --restore priklad-restore.xyz priklad
+```
+
+Output se při tomto běhu neliší od původního běhu.
+
+Stejně tak i výstupní soubory zůstaly stejné.
+
+#### Zobrazení ve VMD
+Nyní můžeme výsledky naší simulace zobrazit. Toho dosáhneme buďto klikáním v grafickém interfacu VMD, nebo přímo z příkazové řádky:
+```sh
+vmd -f data/restore/priklad.xyz -e data/restore/priklad.tcl
+```
+
+### Možné problémy!
+(A jejich řešení. Zatím jen jeden, dělám sbírku.)
+
+#### Chybějící `/` u vstupní/výstupní složky
+Při použítí programu se vám může snadno stát to, co mě a zapomenete při spuštění simulace dát při možnosti vstupní/výstupní složky na konec znak `/`.
+
+Takovýto chybný příkaz vypadá např. takto:
+```sh
+java -jar PMSimulation/PMSimulation.jar -i input/vzory -o data/priklad/ priklad
+```
+
+Výstupem bude chybová hláška:
+```txt
+Exception in thread "main" java.io.FileNotFoundException: input/vzorypriklad.json (No such file or directory)
+        at java.base/java.io.FileInputStream.open0(Native Method)
+        at java.base/java.io.FileInputStream.open(FileInputStream.java:216)
+        at java.base/java.io.FileInputStream.<init>(FileInputStream.java:157)
+        at java.base/java.io.FileInputStream.<init>(FileInputStream.java:111)
+        at java.base/java.io.FileReader.<init>(FileReader.java:60)
+        at com.molecular_java.SimSpace.<init>(SimSpace.java:194)
+        at com.molecular_java.App.main(App.java:545)
+```
+
+Pro opravení stačí lomítko přidat:
+```sh
+java -jar PMSimulation/PMSimulation.jar -i input/vzory/ -o data/priklad/ priklad
+```
+
+<!-- TODO: Udělat pořádně příklad, dát celou sekvenci aminokyselin -->
