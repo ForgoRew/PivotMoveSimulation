@@ -2,46 +2,48 @@
 ## Uživatelská dokumentace programu
 
 **Autor: Miloš Halda**  
-[Programátorská dokumentace.](Pages/index.html)
+[Programátorská dokumentace.](Pages/index.html)  
+[Bakalářská práce](BakalarkaSimProgram.pdf)  
+[Repo na GitHubu](https://github.com/ForgoRew/PivotMoveSimulation)  
 
 ***Obsah:***
 - [PivotMoves](#pivotmoves)
   - [Uživatelská dokumentace programu](#uživatelská-dokumentace-programu)
-    - [Účel programu](#účel-programu)
-    - [Popis základní struktury algoritmu simulace](#popis-základní-struktury-algoritmu-simulace)
-      - [Inicializace](#inicializace)
-      - [Běh](#běh)
-      - [Ukončení běhu a postprocessing](#ukončení-běhu-a-postprocessing)
-    - [Součásti programu](#součásti-programu)
-      - [Datové struktury](#datové-struktury)
-    - [Návod na použití](#návod-na-použití)
-      - [Vstupní soubory](#vstupní-soubory)
-        - [Umístění souboru a formát názvu](#umístění-souboru-a-formát-názvu)
-        - [Formát vstupního souboru](#formát-vstupního-souboru)
-      - [Soubor s AK specifickými epsilony](#soubor-s-ak-specifickými-epsilony)
-      - [Soubory s potenciálovými funkcemi](#soubory-s-potenciálovými-funkcemi)
-      - [Soubor s `FASTA` sekvencí simulovaného proteinu](#soubor-s-fasta-sekvencí-simulovaného-proteinu)
-      - [`XYZ` soubor pro možnost `--restore`](#xyz-soubor-pro-možnost---restore)
-      - [Spuštění programu](#spuštění-programu)
-      - [Výstupy](#výstupy)
-    - [Výsledky](#výsledky)
-    - [Zobrazení průběhu simulace ve VMD](#zobrazení-průběhu-simulace-ve-vmd)
-    - [Tutoriál](#tutoriál)
-      - [Prerekvizity](#prerekvizity)
-      - [Spuštění simulace](#spuštění-simulace)
-      - [Využítí možnosti `--restore`](#využítí-možnosti---restore)
-      - [Zobrazení ve VMD](#zobrazení-ve-vmd)
-    - [Možné problémy!](#možné-problémy)
-      - [Chybějící `/` u vstupní/výstupní složky](#chybějící--u-vstupnívýstupní-složky)
+  - [Účel programu](#účel-programu)
+  - [Popis základní struktury algoritmu simulace](#popis-základní-struktury-algoritmu-simulace)
+    - [Inicializace](#inicializace)
+    - [Běh](#běh)
+    - [Ukončení běhu a postprocessing](#ukončení-běhu-a-postprocessing)
+  - [Součásti programu](#součásti-programu)
+    - [Datové struktury](#datové-struktury)
+  - [Návod na použití](#návod-na-použití)
+    - [Vstupní soubory](#vstupní-soubory)
+      - [Umístění souboru a formát názvu](#umístění-souboru-a-formát-názvu)
+      - [Formát vstupního souboru](#formát-vstupního-souboru)
+    - [Soubor s AK specifickými epsilony](#soubor-s-ak-specifickými-epsilony)
+    - [Soubory s potenciálovými funkcemi](#soubory-s-potenciálovými-funkcemi)
+    - [Soubor s `FASTA` sekvencí simulovaného proteinu](#soubor-s-fasta-sekvencí-simulovaného-proteinu)
+    - [`XYZ` soubor pro možnost `--restore`](#xyz-soubor-pro-možnost---restore)
+    - [Spuštění programu](#spuštění-programu)
+    - [Výstupy](#výstupy)
+  - [Výsledky](#výsledky)
+  - [Zobrazení průběhu simulace ve VMD](#zobrazení-průběhu-simulace-ve-vmd)
+  - [Tutoriál](#tutoriál)
+    - [Prerekvizity](#prerekvizity)
+    - [Spuštění simulace](#spuštění-simulace)
+    - [Využítí možnosti `--restore`](#využítí-možnosti---restore)
+    - [Zobrazení ve VMD](#zobrazení-ve-vmd)
+  - [Možné problémy!](#možné-problémy)
+    - [Chybějící `/` u vstupní/výstupní složky](#chybějící--u-vstupnívýstupní-složky)
 
-### Účel programu
+## Účel programu
 Tento program je určený pro testování potenciálových funkcí. Program využívá zjednodušený model proteinu (coarse-grained). Protein je zjednodušený na aminokyseliny reprezentované jako koule se středem v $C_\alpha$ uhlících a konstantním poloměrem. Jako návrh stavu je využito náhodné otočení části řetězce okolo pivota. K vyhodnocení návrhu stavu je použita metoda Monte Carlo.
 <!-- TODO: Asi bude brzy změna v LJ -->
 Program v současnosti využívá Lennard-Jonesův potenciál jako funkci pro nevazebný potenciál. Pro bending a dihedrální potenciál program využívá funkce získané pomocí Boltzmannovy inverze, nicméně přijme jakoukoli funkci v požadovaném formátu, viz sekce ["Vstupní soubory"](#vstupní-soubory). Program je také snadno uživatelsky přístupný pro člověka zvyklého pracovat s příkazovou řádkou a dostatečně jednoduchý, aby bylo možné jej dále vylepšovat a snadno upravovat. Program zaznamenává důležité údaje v simulaci a měří průměry a chyby u důležitých hodnot.
 
-### Popis základní struktury algoritmu simulace
+## Popis základní struktury algoritmu simulace
 Simulace probíhá ve 3 fázích, iniciace, běh a ukončení běhu. 
-#### Inicializace
+### Inicializace
 Program přijme jako argumenty názvy simulací, (volitelně) cestu ke složce se vstupními soubory a (volitelně) cestu s výstupními soubory. Ze vstupního souboru načte parametry simulace:
 - parametry pro výpočet LJ potenciálu,
 - soubory s hodnotami bending a dihedrálního potenciálu,
@@ -52,13 +54,13 @@ Program přijme jako argumenty názvy simulací, (volitelně) cestu ke složce s
 
 Pomocí těchto veličin program vytvoří řetězec částic, který bude simulovat.
 
-#### Běh
+### Běh
 Program poté provede simulaci typu Pivot-Moves, což je postup kombinující přístup Monte-Carlo pro přijímání nových stavů a generování nových stavů pomocí pivotové transformace daného řetězce. Program provede zadaný počet cyklů, během kterých si ukládá důležité údaje ze simulace.
 
-#### Ukončení běhu a postprocessing
-Po provedení zadaného počtu cyklů program vyhodnotí relevantní průměry měřených veličin, zaznamená dobu běhu simulace a vypočítá errory. Vytvoří také výstupní (log) soubor s informacemi o simulaci.
+### Ukončení běhu a postprocessing
+Po provedení zadaného počtu cyklů program vyhodnotí relevantní průměry měřených veličin, zaznamená dobu běhu simulace a vypočítá errory. Vytvoří také výstupní (`log`) soubor s informacemi o simulaci.
 
-### Součásti programu
+## Součásti programu
 Program se skládá z 10 tříd. Z programátorského hlediska jsou popsány blíž v technické dokumentaci (v EN). Představím je proto jen stručně z hlediska jejich použití v rámci programu.
 
 - ***App***
@@ -88,19 +90,19 @@ Další informace viz dokumentace programu (vygenerovaná pomocí `javadoc`).
 
 <!-- TODO: vygenerovat dokumentaci a dát proklik na ní. -->
 
-#### Datové struktury
-Prakticky všechna data jsou většinu času uložena v textových souborech, kam se průběžně zapisují. V souborech jsou vstupní soubory (přípona .json, v případě tabulky s epsilony a potenciály přípona .csv), nezpracovaná data simulace (.csv), souřadnice molekul během simulace (.xyz), průměry veličin (.avg.csv) a výstupní soubor (.log), který obsahuje důležité údaje ze vstupu i z výsledků simulace (průměry, chyby a simulační čas). Ze vstupu jsou data uložena do proměnných a poté také jako parametry třídy Ball a především do objektu `SimSpace`. Objekt třídy SimSpace (v kódu zpravidla pojmenovaný jako `s`) hraje během simulace centrální roli, protože obsahuje všechny důležité parametry aktuálního stavu simulace a pomocí něj jsou tyto hodnoty předávány i metodám. Program má za účel simulaci libovolného množství molekul jednoho typu, které jsou reprezentovány objekty třídy Ball, v simulačním prostoru. Objekty třídy Ball jsou uloženy v objektu třídy `ArrayList` nazvaný `balls` a jsou atributem objektu `s` třídy SimSpace.
+### Datové struktury
+Prakticky všechna data jsou většinu času uložena v textových souborech, kam se průběžně zapisují. V souborech jsou vstupní soubory (přípona .json, v případě tabulky s epsilony a potenciály přípona `.csv`), nezpracovaná data simulace (`.csv`), souřadnice molekul během simulace (`.xyz`), průměry veličin (`.avg.csv`) a výstupní soubor (`.log`), který obsahuje důležité údaje ze vstupu i z výsledků simulace (průměry, chyby a simulační čas). Ze vstupu jsou data uložena do proměnných a poté také jako parametry třídy Ball a především do objektu `SimSpace`. Objekt třídy SimSpace (v kódu zpravidla pojmenovaný jako `s`) hraje během simulace centrální roli, protože obsahuje všechny důležité parametry aktuálního stavu simulace a pomocí něj jsou tyto hodnoty předávány i metodám. Program má za účel simulaci libovolného množství molekul jednoho typu, které jsou reprezentovány objekty třídy Ball, v simulačním prostoru. Objekty třídy Ball jsou uloženy v objektu třídy `ArrayList` nazvaný `balls` a jsou atributem objektu `s` třídy SimSpace.
 
 <!-- Snížit úrovně nadpisů... -->
-### Návod na použití
-#### Vstupní soubory
+## Návod na použití
+### Vstupní soubory
 Ke spuštění programu je kromě Javy potřeba mít připravený vstupní soubor s parametry simulace a dále soubory, které jsou v něm definované.
 
-##### Umístění souboru a formát názvu
+#### Umístění souboru a formát názvu
 Vstupní soubor má název ve formátu `[název simulace].json`. Složka se vstupním souborem je buďto složka, kde běží program, nebo může být explicitně definována pomocí možností `-i` a `--input`.
 Celkově tedy vůči pracovnímu adresáři musí být na "path" `./[název vstupní složky][název simulace].json`.
 
-##### Formát vstupního souboru
+#### Formát vstupního souboru
 Vstupní soubor je ve formátu `JSON` a všechny položky uvedené v následujícím příkladu jsou nezbytné pro běh programu.
 
 Uvedený příklad je okomentovanou verzí [vzorového vstupního souboru](input/vzory/priklad.json).
@@ -147,7 +149,7 @@ Název souboru: `32Gly.in`
     "RenderTCL": false
 }
 ```
-#### Soubor s AK specifickými epsilony
+### Soubor s AK specifickými epsilony
 Soubor pro epsilony specifickými pro jednotlivé kombinace aminokyselin (jeho název je specifikován ve vstupním `JSON` souboru v položce "SimulationMatrixFileName") má následující formát:
 ```csv
 [řádek se značkami typů aminokyselin (musí se shodovat se značkami pro aminokyseliny v souboru `FASTA`)]
@@ -166,12 +168,10 @@ H,P
 
 Během testování programu byla využita matice upravená z [Tanaky 1976](input/vzory/AZ-Tanaka.csv). Protože se jedná o rozsáhlejší soubor, není zde vložena kvůli přehlednosti. Je možné ji najít ve [vzorové složce pro vstupní soubory](input/vzory/).
 
-#### Soubory s potenciálovými funkcemi
+### Soubory s potenciálovými funkcemi
 Soubory specifikované ve vstupním `JSON` souboru jako položky  
 `"BendingPotentialTableName"` a 
-`"DihedralPotentialTableName"` obsahují hodnoty potenciálů pro dané hodnoty úhlů. Při vytváření těchto souborů je potřeba mít na paměti, že bending potenciál je definován v intervalu $[0,\pi]$ a dihedrální potenciál v intervalu $[-\pi,\pi]$. Více o tomto problému je možné najít v mojí bakalářské práci v příslušných sekcích kapitoly "2 Metody".
-
-<!-- TODO: Nahrát bakalářku a dát prokliky. -->
+`"DihedralPotentialTableName"` obsahují hodnoty potenciálů pro dané hodnoty úhlů. Při vytváření těchto souborů je potřeba mít na paměti, že bending potenciál je definován v intervalu $[0,\pi]$ a dihedrální potenciál v intervalu $[-\pi,\pi]$. Více o tomto problému je možné najít v mojí [bakalářské práci](BakalarkaSimProgram.pdf) v příslušných sekcích kapitoly "2 Metody".
 
 Samotné soubory mají následující formát:
 ```csv
@@ -199,7 +199,7 @@ Celé soubory [`dihedralPotential.csv`](input/vzory/bendingPotential.csv) a [`be
 
 <!-- TODO: Otestovat prokliky na složky na GitHubu -->
 
-#### Soubor s `FASTA` sekvencí simulovaného proteinu
+### Soubor s `FASTA` sekvencí simulovaného proteinu
 Soubor `FASTA` (položka `"FASTAFileName"` ve vstupním `JSON` souboru) obsahuje vstupní sekvenci aminokyselin. Je potřeba zkontrolovat, aby všechny uvedené značky aminokyselin byly také v headeru tabulky pro AK specifické hodnoty `epsilon`.
 
 Soubor má formát jako klasický `FASTA` soubor, jen není podstatný první řádek s informacemi o sekvenci:
@@ -219,7 +219,7 @@ GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 ARNDCQEGHILKMFPSTWYV
 ```
 
-#### `XYZ` soubor pro možnost `--restore`
+### `XYZ` soubor pro možnost `--restore`
 V případě, že je použita možnost `--restore` musí být ve vstupní složce i `XYZ` soubor, ze kterého budou "obnoveny" pozice aminokyselin v daném kroce simulace.
 
 Cesta ke vstupnímu souboru se počítá od vstupní složky:
@@ -241,7 +241,7 @@ Formát souboru vypadá takto:
 
 Ukázkový [restore soubor](input/vzory/priklad-restore.xyz) soubor je ve složce příkladů.
 
-#### Spuštění programu
+### Spuštění programu
 Obecně se program spustí příkazem:
 ```sh
 java -jar molecularjava.jar [možnosti] [název simulace 1] [název simulace 2] ...
@@ -272,7 +272,7 @@ Pro Windows:
 java -jar PMSimulation/PMSimulation.jar -i input\ -o data\ 32Gly > NULL
 ```
 
-#### Výstupy
+### Výstupy
 Výstupní soubory je pak možné najít ve složce, kde běží program, nebo ve složce, kterou jsme si explicitně definovali.
 
 Jejich název je prakticky stejný jako název vstupního souboru jen s jinými příponami. Pro naší simulaci bychom našli tyto soubory:
@@ -283,17 +283,17 @@ Jejich název je prakticky stejný jako název vstupního souboru jen s jinými 
 [název simulace].xyz # Soubor souřadnic molekul v prostoru. Je možné je zobrazit např. v programu VMD.
 ```
 <!-- TODO: Dát opravenou verzi programu!! -->
-### Výsledky
-Pro výsledky vizte kapitolu [5 Výsledky]() v bakalářské práci.
+## Výsledky
+Pro výsledky vizte kapitolu [5 Výsledky](BakalarkaSimProgram.pdf) v bakalářské práci.
 
-### Zobrazení průběhu simulace ve VMD
+## Zobrazení průběhu simulace ve VMD
 Pro zobrazení simulace v programu [VMD (Visual Molecular Dynamics)](https://www.ks.uiuc.edu/Research/vmd/) slouží simulací vygenerované soubory `XYZ` a `TCL`
 
 Použijte příkaz ve tvaru:
 ```sh
 vmd -f [výstupní složka][název simulace].xyz -e [výstupní složka][název simulace].tcl
 ```
-Barvy kuliček odpovídají barevnému kódu jak je uveden v [bakalářské práci v kapitole 3 Výsledky](TODO).
+Barvy kuliček odpovídají barevnému kódu jak je uveden v [bakalářské práci v kapitole 3 Výsledky](BakalarkaSimProgram.pdf).
 
 Pokud byla nastavena položka "RenderTCL" ve vstupním JSON souboru na `true`, VMD se zapne, vytvoří snapshot struktury a vypne se. Tomu je možné zabránit odstraněním příkazů, které následující po řádku
 ```tcl
@@ -301,15 +301,15 @@ Pokud byla nastavena položka "RenderTCL" ve vstupním JSON souboru na `true`, V
 ```
 
 Pro více informací je možné zadat `vmd --help` do příkazové řádky, nebo se podívat na [stránky VMD](https://www.ks.uiuc.edu/Research/vmd/).
-### Tutoriál
+## Tutoriál
 
 Pro lepší pochopení je možné si přímo program vyzkoušet. Tutoriál je připravený **pro uživatele Linuxu**, při splnění prerekvizit s malými modifikacemi (např. lomítko `\` namísto `/`) tutoriál funguje také pro uživatele Windows, případně Mac OS.
 
-#### Prerekvizity
+### Prerekvizity
 1. stažené repository z GitHubu na počítač
 2. instalovaná Java 17 (respektive 8 pro downgradovanou verzi programu)
 3. instalované VMD (pro zobrazení hotového proteinu)
-#### Spuštění simulace
+### Spuštění simulace
 Pokud jsme s příkazovou řádkou v hlavní složce projektu (`PivotMovesSimulation`), můžeme se podívat do složky `input/priklad/` pomocí příkazu 
 
 ```sh
@@ -365,7 +365,7 @@ vytvořené tyto soubory:
 
 Význam těchto souborů viz sekce [Vstupní soubory](#vstupní-soubory).
 
-#### Využítí možnosti `--restore`
+### Využítí možnosti `--restore`
 Pro využítí možnosti obnovy určitého stavu simulace je potřeba nejprve vytvořit soubor `priklad-retore.xyz`, např. příkazem 
 
 ```sh
@@ -388,16 +388,16 @@ Output se při tomto běhu neliší od původního běhu.
 
 Stejně tak i výstupní soubory zůstaly stejné.
 
-#### Zobrazení ve VMD
+### Zobrazení ve VMD
 Nyní můžeme výsledky naší simulace zobrazit. Toho dosáhneme buďto klikáním v grafickém interfacu VMD, nebo přímo z příkazové řádky:
 ```sh
 vmd -f data/restore/priklad.xyz -e data/restore/priklad.tcl
 ```
 
-### Možné problémy!
+## Možné problémy!
 (A jejich řešení. Zatím jen jeden, dělám sbírku.)
 
-#### Chybějící `/` u vstupní/výstupní složky
+### Chybějící `/` u vstupní/výstupní složky
 Při použítí programu se vám může snadno stát to, co mě a zapomenete při spuštění simulace dát při možnosti vstupní/výstupní složky na konec znak `/`.
 
 Takovýto chybný příkaz vypadá např. takto:
@@ -421,5 +421,3 @@ Pro opravení stačí lomítko přidat:
 ```sh
 java -jar PMSimulation/PMSimulation.jar -i input/vzory/ -o data/priklad/ priklad
 ```
-
-<!-- TODO: Udělat pořádně příklad, dát celou sekvenci aminokyselin -->
