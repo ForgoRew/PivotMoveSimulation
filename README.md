@@ -91,7 +91,6 @@ Další informace viz dokumentace programu (vygenerovaná pomocí `javadoc`).
 ### Datové struktury
 Prakticky všechna data jsou většinu času uložena v textových souborech, kam se průběžně zapisují. V souborech jsou vstupní soubory (přípona .json, v případě tabulky s epsilony a potenciály přípona `.csv`), nezpracovaná data simulace (`.csv`), souřadnice molekul během simulace (`.xyz`), průměry veličin (`.avg.csv`) a výstupní soubor (`.log`), který obsahuje důležité údaje ze vstupu i z výsledků simulace (průměry, chyby a simulační čas). Ze vstupu jsou data uložena do proměnných a poté také jako parametry třídy Ball a především do objektu `SimSpace`. Objekt třídy SimSpace (v kódu zpravidla pojmenovaný jako `s`) hraje během simulace centrální roli, protože obsahuje všechny důležité parametry aktuálního stavu simulace a pomocí něj jsou tyto hodnoty předávány i metodám. Program má za účel simulaci libovolného množství molekul jednoho typu, které jsou reprezentovány objekty třídy Ball, v simulačním prostoru. Objekty třídy Ball jsou uloženy v objektu třídy `ArrayList` nazvaný `balls` a jsou atributem objektu `s` třídy SimSpace.
 
-<!-- Snížit úrovně nadpisů... -->
 ## Návod na použití
 ### Vstupní soubory
 Ke spuštění programu je kromě Javy potřeba mít připravený vstupní soubor s parametry simulace a dále soubory, které jsou v něm definované.
@@ -157,14 +156,14 @@ Soubor pro epsilony specifickými pro jednotlivé kombinace aminokyselin (jeho n
 
 Jednodušší ale bude nejspíš ukázat příklady reálně používaných souborů.
 
-Pro jednoduchost nejprve matice $2×2$ pro tzv. [HP model](input/vzory/HP-matice.csv) (rozlišuje se jen na hydrofóbní a hydrofilní aminokyseliny):
+Pro jednoduchost nejprve [matice $2×2$ pro tzv. HP model](input/vzory/HP-matice.csv) (rozlišuje se jen na hydrofóbní a hydrofilní aminokyseliny):
 ```csv
 H,P
 2,8
 8,1 
 ```
 
-Během testování programu byla využita matice upravená z [Tanaky 1976](input/vzory/AZ-Tanaka.csv). Protože se jedná o rozsáhlejší soubor, není zde vložena kvůli přehlednosti. Je možné ji najít ve [vzorové složce pro vstupní soubory](input/vzory/).
+Během testování programu byla využita [matice](input/vzory/AZ-Tanaka.csv) upravená z [Tanaky 1976](https://doi.org/10.1021/ma60054a013) (upravená tabulka III., více v [Bakalářce](BakalarkaSimProgram.pdf)). Protože se jedná o rozsáhlejší soubor, není zde vložena kvůli přehlednosti. Je možné ji najít ve [vzorové složce pro vstupní soubory](input/vzory/).
 
 #### Soubory s potenciálovými funkcemi
 Soubory specifikované ve vstupním `JSON` souboru jako položky  
