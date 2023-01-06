@@ -49,15 +49,16 @@ public class StepVars {
      * Non-standard constructor, used only to count
      * everything in the initial stay of the system
      * to note it.
-     * 
-     * @param s simulation space
-     * @throws OperationNotSupportedException if some parameter e.g. name of potential
-     *      used for its count is not writen properly.
      */
     public StepVars(){}
     
-    /**Standard constructor of the StepVars.
+    /**
+     * Standard constructor of the StepVars.
      * Everything is initialized in it.
+     * 
+     * @param s simulation state.
+     * @throws OperationNotSupportedException if some parameter e.g. name of potential
+     *      used for its count is not writen properly.
      */
     public StepVars(SimSpace s) throws OperationNotSupportedException
     /** Constructor only for the beginning of simulation to note the initial state. */
@@ -81,8 +82,9 @@ public class StepVars {
     
     /** 
      * In this method some additional parameters about the simulation are count.
-     * @param s
-     * @throws OperationNotSupportedException
+     * @param s simulation space, all parameters are given in it.
+     * @throws OperationNotSupportedException if some parameter e.g. name of potential
+     *      used for its count is not writen properly.
      */
     public void CountAdditionalParams(SimSpace s) throws OperationNotSupportedException {
         /**Gyration radius and distance between the last and the first ball in the system. */

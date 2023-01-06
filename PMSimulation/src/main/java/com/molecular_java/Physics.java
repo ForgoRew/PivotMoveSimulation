@@ -19,11 +19,11 @@ public class Physics
      * Method to count "Lennard-Jones potential".
      * It is harmonic potential very well used for many types
      * of molecular simulatons.
-     * @param epsilon defines the depth of the "well"
-     * @param sigma defines is equal to the diameter of particles
-     * @param distance
-     *      usually a distance of the two balls the potential is counted for
-     * @return potential count with "Lennard-Jones" equation
+     * @param s contains the variables needed for the simulation
+     * @param ball1 ball for which the potential will be count
+     * @param ball2 ball for which the potential will be count
+     * @param distance distance of the two given balls
+     * @return the method returns a value of LJ potential for given values.
      */
     public static Double lennardJonesPotential(SimSpace s, Ball ball1, Ball ball2, Double distance)
     {
@@ -83,8 +83,6 @@ public class Physics
      * @param distance
      *      usually a distance of the two balls the potential is counted for
      * @return force
-     * 
-     * @see LennardJonesPotential
      */
     public static Double lennardJonesForce(Double epsilon, Double sigma, Double distance)
     {
@@ -100,8 +98,6 @@ public class Physics
      * @param distance
      *      usually a distance of the two balls the potential is counted for
      * @return force
-     * 
-     * @see HardSpheresPotential
      */
     public static Double hardSpheresForce(Double sigma, Double distance)
     {
@@ -120,8 +116,6 @@ public class Physics
      * @param distance a distance of the two balls the potential is counted for
      * @param lambda defines the depth of potential valley
      * @return force
-     * 
-     * @see SquareWellPotential
      */
     public static Double squareWellForce(Double epsilon, Double sigma, Double distance, Double lambda)
     {
@@ -140,13 +134,9 @@ public class Physics
      *      Simulation space.
      * @param ball1 1st ball
      * @param ball2 2nd ball
-     * @param factor
      *      Quite important constant -- affects scaling of the distance.
      *      Usually equal 1, however it can have different values for different types of wanted pressure.
      * @return distance of two balls
-     * @see #pressureInSystem(SimSpace, List)
-     * @see #potentialInSystem(SimSpace, double, List)
-     * @see #bendingPotentialInSystem(SimSpace, double, List)
      */
     public static Double distanceOfTwoBalls(SimSpace s, Ball ball1, Ball ball2)
     {
@@ -188,9 +178,6 @@ public class Physics
      * @return potential of two balls
      * @throws OperationNotSupportedException
      *      if the parameters are not given properly.. See the error description.
-     * 
-     * @see potentialInSystem
-     * @see pressureInSystem
      */
     public static Double calculatePotential(SimSpace s, List<Ball> balls, int b1, int b2, Double factor) throws OperationNotSupportedException
     {
@@ -243,16 +230,9 @@ public class Physics
      * This method counts the gyration radius of the balls in system.
      * It uses usual formula for it (e.g. https://en.wikipedia.org/wiki/Radius_of_gyration).
      * It uses also the {@link #centerOfMass(SimSpace)} method to get the center of mass.
-     * 
-     * It uses {@link #distanceOfTwoBalls(SimSpace, Ball, Ball, double)}.
-     * 
-     * @param s
-     *      is a simulation space, which contains the list of balls and constants needed for the
+     * @param s is a simulation space, which contains the list of balls and constants needed for the
      *      computation.
      * @return radius of gyration
-     * 
-     * @see #centerOfMass(SimSpace)
-     * @see #distanceOfTwoBalls(SimSpace, Ball, Ball, double)
      */
     public static Double radiusOfGyration(SimSpace s)
     {
@@ -268,8 +248,7 @@ public class Physics
      * Computes a position of center of mass of balls in given simulation space.
      * Used in {@link #radiusOfGyration(SimSpace)}
      * 
-     * @param s
-     *      is simulation space
+     * @param s is the simulation space
      * @return center of mass represented by a vector in {@code Double[]}
      * 
      * @see #radiusOfGyration(SimSpace)
@@ -293,13 +272,12 @@ public class Physics
     
     /** 
      * Method counts angle between the tree given balls.
-     * @param ball1
-     * @param ball_middle
-     * @param ball2
-     * @return double
-     * @throws OperationNotSupportedException
+     * @param ball1 1st ball.
+     * @param ball_middle the ball in the middle.
+     * @param ball2 2nd ball.
+     * @return double value of the angle between two given balls (vectors between them).
      */
-    public static double angle(Ball ball1, Ball ball_middle, Ball ball2) throws OperationNotSupportedException
+    public static double angle(Ball ball1, Ball ball_middle, Ball ball2)
     {
         double[] v = new double[]{ ball1.coordinates[0]-ball_middle.coordinates[0],
                                     ball1.coordinates[1]-ball_middle.coordinates[1],
@@ -397,16 +375,11 @@ public class Physics
     }
     /**
      * Dot for 3D vectors in an array.
-     * @param vector1
-     * @param vector2
+     * @param vector1 is the 1st given vector.
+     * @param vector2 is the 2nd given vector.
      * @return dot of the two given vectors.
-     * @throws OperationNotSupportedException
      */
-    public static double dot(double[] vector1, double[] vector2) throws OperationNotSupportedException{
-        // Quick check if really 3D :D
-        if (vector1.length != 3 || vector2.length != 3){
-            throw new OperationNotSupportedException("The vector have wrong dimension!");
-        }
+    public static double dot(double[] vector1, double[] vector2){
         double result = vector1[0]*vector2[0]+
                         vector1[1]*vector2[1]+
                         vector1[2]*vector2[2];
@@ -414,9 +387,9 @@ public class Physics
     }
     /**
      * Cross product for 3D vectors.
-     * @param vector1
-     * @param vector2
-     * @return
+     * @param v1 vector 1
+     * @param v2 vector 2
+     * @return cross product of v1 and v2
      */
     public static double[] crossProduct(double[] v1, double[] v2){
         return new double[]{ v1[1]*v2[2] - v1[2]*v2[1],
@@ -425,25 +398,19 @@ public class Physics
     }
     /**
      * 3D Vector multiplication.
-     * @param v
-     * @param r
-     * @return
+     * @param v vector
+     * @param r scalar
+     * @return multiplication of given vectors
      */
     public static double[] vectorMultip(double[] v, double r){
         return new double[]{v[0]*r, v[1]*r, v[2]*r};
     }
     /**
      * Counts a length of given 3D vector.
-     * @param vector
-     * @return length of vector
-     * @throws OperationNotSupportedException
+     * @param vector given vector
+     * @return length of the given vector
      */
-    public static double vectorLength(double[] vector) throws OperationNotSupportedException {
-        // Quick check if really 3D :D
-        if (vector.length != 3){
-            throw new OperationNotSupportedException("The vector have wrong dimension!");
-        }
-
+    public static double vectorLength(double[] vector) {
         return Math.sqrt(
                 Math.pow(vector[0],2) + 
                 Math.pow(vector[1], 2) +
@@ -783,8 +750,8 @@ public class Physics
      * Currently, this function modifys the temperature in
      * system, so it linearily changes from the initial state
      * to the final state.
-     * @param s
-     * @return
+     * @param s simulation space
+     * @return Boltzmann's factor for the right value of temperature in system. 
      */
     public static Double boltzmannsFactor(SimSpace s) {
         double temperature = s.temperatureInit + (s.temperatureFinal-s.temperatureInit)/s.numberOfCycles * s.v.cycle;
@@ -814,9 +781,8 @@ public class Physics
      * For given value of angle (rad) returns a potentials value from the given table.
 
      * @param potentialTable table with degrees and their potential values.
-     * @param rad angle in rads.
-     * @return
-     * @see SimSpace.loadPotentialFromCSV to know the function which produces the table itself.
+     * @param rad angle in rads. (can be also distance for non-bonding potential)
+     * @return gets the nearest potential value according to the given rads (can be also distance for non-bonding potential).
      */
     public static Double getPotentialFromTable(Double[][] potentialTable, Double rad) {
         // Method to find adequate value:

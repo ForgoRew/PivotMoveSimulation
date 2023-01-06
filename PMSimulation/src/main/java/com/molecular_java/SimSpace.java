@@ -182,11 +182,11 @@ public class SimSpace
      * {@link Random} object or {@code MyWatches}, which are very
      * important for the simulation run.
      * 
-     * @param inputFolderName
+     * @param InputFolderName
      *      the name of the input folder
-     * @param outputFolderName
+     * @param OutputFolderName
      *      the name of the output folder
-     * @param simulationName
+     * @param SimulationName
      *      the name of simulation
      * @throws IOException if the input file is missing or is loaded incorrectly
      * @throws NumberFormatException if the numbers in the input file are not formatted correctly
@@ -355,7 +355,7 @@ public class SimSpace
     }
     
     /** 
-     * @throws IOException
+     * @throws IOException occurs if there is some error with I/O
      */
     public void makeTclScript() throws IOException {
         String header = 
@@ -630,7 +630,9 @@ public class SimSpace
      * 
      * Made for purpose of very long simulation,
      * in which unwanted break is probable.
-     * @throws IOException
+     * @param restoreFileName name of the file which contains the XYZ values for the structure to be restored.
+     * 
+     * @throws IOException if it is not worked with the file system properly.
      */
     public void restorePozitionsFromXYZ(String restoreFileName) throws IOException {
         BufferedReader restFile = new BufferedReader(new FileReader(new File(this.inputFolder+restoreFileName)));
@@ -653,9 +655,7 @@ public class SimSpace
      * @param inPotFileName is the filepath to a csv file
      * @return 2 dimensional array, [0] are the values of angle in rads and [1]
      * the concord values of potential in the simulation units.
-     * @see #SimSpace
-     * @see #Physics.getPotentialFromTable
-     * @throws IOException
+     * @throws IOException if it is not worked with the file properly.
      */
     public Double[][] loadPotentialFromCSV(String inPotFileName) throws IOException {
         BufferedReader in_pot = new BufferedReader(new FileReader(inPotFileName));

@@ -19,12 +19,14 @@ public class Ball
     /**Code for indexing. */
     public int code;
     
-    /** The basic constructor which makes an object of class
+    /**
+     * The basic constructor which makes an object of class
      * Ball accordingly to the SimulationBox properties and
      * sets its diameter.
-     * @param sBox simulation box in the simulation space
-     * @param random {@link Random} object to set coordinates
+     * @param random {@code Random} object to set coordinates
      * @param diam diameter of the ball
+     * @param aaCodes a dictionary of codes and values of types
+     * @param type_in type of newly forming AA ball
      */
     public Ball(Random random, double diam, Hashtable<Character,Integer> aaCodes, char type_in)
     {
