@@ -452,7 +452,7 @@ class App
             if (s.numberOfCycles < 20000 & s.v.cycle % 10 == 0 || s.numberOfCycles<200)
                 System.out.println(String.format("%d/%d", s.v.cycle, s.numberOfCycles));
             if (s.v.cycle % 10000 == 0)
-                System.out.println(String.format("%d/%d (%d", s.v.cycle, s.numberOfCycles, (int) (s.v.cycle/s.numberOfCycles*100))+"%)");
+            System.out.println(String.format("%d/%d (%d", s.v.cycle, s.numberOfCycles, (int) ((double) s.v.cycle*100 / (double) s.numberOfCycles))+"%)");
             if (s.v.cycle % s.noteFreq == 0){
                 notePositions(s);
                 //noteDistances(s);
@@ -492,12 +492,15 @@ class App
         String inFolder = "";
         String outFolder = "";
         Boolean restore = false;
+        String restoreName = "";
 
         /* Scanning arguments - three options:
         * -i/--input defines the input folder
         * -o/--output defines the output folder
         * -h/--help: tells to go to README.md for further info.
-        *
+        * 
+        * --restore sets var "restore" to true, in the input file needs to be an xyz frame
+        * 
         * by "-" we sign an argument with an option.
         */
         
@@ -520,6 +523,9 @@ class App
             else if (args[i].equals("--restore")){
                 args[i] = "-";
                 restore = true;
+                i++;
+                restoreName = args[i];
+                args[i] = "-";
             }
             // Help wanted:
             else if (args[i].equals("-h") || args[i].equals("--help")){
@@ -544,13 +550,15 @@ class App
                 String simulationName = args[i];
                 SimSpace s = new SimSpace(inFolder, outFolder, simulationName);
 
-                // Initialize the positions of each ball.
-                Physics.makeChain(s, s.balls);
                 // Restore the pozitions from xyz file?
                 if (restore){
-                    s.restorePozitionsFromXYZ();
+                    s.restorePozitionsFromXYZ(restoreName);
                 }
-
+                else{
+                    // Initialize the positions of each ball.
+                    Physics.makeChain(s, s.balls);
+                }
+                
                 // Let's go to start the simulation!!
                 s.watches.start();
                 pivotMovesSimulation(s);
@@ -560,7 +568,6 @@ class App
                 s.dataFile.close();
                 s.xyzFile.close();
                 s.avgFile.close();
-
                 writeLog(s);
 
                 System.out.println("Simulation " + simulationName + ": Was succesfull.");

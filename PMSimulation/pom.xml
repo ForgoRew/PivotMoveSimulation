@@ -9,7 +9,8 @@
   <version>1.0-SNAPSHOT</version>
 
   <name>molecularjava</name>
-  <url>https://github.com/ForgoRew/PivotMoveSimulation</url>
+  <!-- FIXME change it to the project's website -->
+  <url>https://github.com/ForgoRew/MolecularSimulation</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

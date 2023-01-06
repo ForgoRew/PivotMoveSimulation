@@ -27,6 +27,15 @@ import org.json.*;
  */
 public class SimSpace
 {
+    /**Simulation name. */
+    public String simulationName;
+
+    // Folder names
+    /**Input folder path.*/
+    public String inputFolder;
+    /**Output folder path. */
+    public String outputFolder;
+
     // File names:
     /** Name of the input file. */
     public String inputFileName;
@@ -183,10 +192,14 @@ public class SimSpace
      * @throws NumberFormatException if the numbers in the input file are not formatted correctly
      * @throws OperationNotSupportedException if the simulation box got wrong parameters
      */
-    public SimSpace(String inputFolderName, String outputFolderName, String simulationName) throws IOException, NumberFormatException, OperationNotSupportedException{
+    public SimSpace(String InputFolderName, String OutputFolderName, String SimulationName) throws IOException, NumberFormatException, OperationNotSupportedException{
+        simulationName = SimulationName;
+        inputFolder = InputFolderName;
+        outputFolder = OutputFolderName;
+        
         // Name init:
-        inputFileName = inputFolderName + simulationName;
-        dataFileName = outputFolderName + simulationName;
+        inputFileName = inputFolder + simulationName;
+        dataFileName = outputFolder + simulationName;
         
         // File init:
 
@@ -221,7 +234,7 @@ public class SimSpace
 
         // Matrix of potentials:
         String matrixfName = JSONInput.getString("SimulationMatrixFileName");
-        BufferedReader matrixFile = new BufferedReader( new FileReader(new File(inputFolderName+matrixfName)));
+        BufferedReader matrixFile = new BufferedReader( new FileReader(new File(inputFolder+matrixfName)));
         // Read the 1letter codes of AAs:
         String aminoAcids = matrixFile.readLine();
         // Give coding of AAs (indexes to potential matrix):
@@ -232,7 +245,7 @@ public class SimSpace
 
         // FASTA sequence:
         String fastafName = JSONInput.getString("FASTAFileName");
-        BufferedReader fastaFile = new BufferedReader( new FileReader(new File(inputFolderName+fastafName)));
+        BufferedReader fastaFile = new BufferedReader( new FileReader(new File(inputFolder+fastafName)));
         fSequence = ReadNextParameter(fastaFile);
         fastaFile.close();
 
@@ -256,14 +269,14 @@ public class SimSpace
         // Deprecated, parable function unused.
         //bendingConst = JSONInput.getDouble("BendingPotentialConstant");
         //bendingAngleOffsetCos = JSONInput.getDouble("BendingAngleOffset");
-        String bendingTableName = inputFolderName + JSONInput.getString("BendingPotentialTableName");
+        String bendingTableName = inputFolder + JSONInput.getString("BendingPotentialTableName");
         bendingPotentialTable = loadPotentialFromCSV(bendingTableName);
 
         // Dihedral potential
         // Deprecated, parable function unused.
         //constantDihedralAngle = JSONInput.getDouble("DihedralPotentialConstant");
         //optimalDihedralAngle = JSONInput.getDouble("DihedralAngleOffset");
-        String dihedralTableName = inputFolderName + JSONInput.getString("DihedralPotentialTableName");
+        String dihedralTableName = inputFolder + JSONInput.getString("DihedralPotentialTableName");
         dihedralPotentialTable = loadPotentialFromCSV(dihedralTableName);
 
         // Additional params:
@@ -383,7 +396,7 @@ public class SimSpace
             #for {set i 0} {$i < [$s num]} {incr i} {
             #  addbond $i $i+1
             #  }
-                """;
+        """;
         String footer = 
         """
             $s setbonds $b
@@ -582,9 +595,13 @@ public class SimSpace
 
             # best resolution
             render POV3 snapshot_one.pov
-            #povray +W3600 +H3600 -Isnapshot_one.pov -Osnapshot_one.png +D +X +A +FN
-            povray +W3600 +H4400 -Isnapshot_one.pov -Osnapshot_one.png +D +X +A +FN
-            #povray +W2400 +H3600 -Isnapshot_one.pov -Osnapshot_one.png +D +X +A +FN
+            """ +
+            
+            "#povray +W3600 +H3600 -Isnapshot_one.pov -O" + this.simulationName +".png +D +X +A +FN\n"+
+            "povray +W3600 +H4400 -Isnapshot_one.pov -O" + this.simulationName +".png +D +X +A +FN\n"+
+            "#povray +W2400 +H3600 -Isnapshot_one.pov -O" + this.simulationName +".png +D +X +A +FN\n"+
+
+            """
             quit
             # after povray treatment in konsole:
             # mogrify -shave 600x1200 snapshot_one.png
@@ -615,8 +632,8 @@ public class SimSpace
      * in which unwanted break is probable.
      * @throws IOException
      */
-    public void restorePozitionsFromXYZ() throws IOException {
-        BufferedReader restFile = new BufferedReader(new FileReader(new File(this.inputFileName + ".restore.xyz")));
+    public void restorePozitionsFromXYZ(String restoreFileName) throws IOException {
+        BufferedReader restFile = new BufferedReader(new FileReader(new File(this.inputFolder+restoreFileName)));
         
         // Remove first two rows:
         restFile.readLine();
