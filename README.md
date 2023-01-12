@@ -307,7 +307,7 @@ Pro lepší pochopení je možné si přímo program vyzkoušet. Tutoriál je p�
 
 ### Prerekvizity
 1. stažené repository z GitHubu na počítač
-2. instalovaná Java 17 (respektive 8 pro downgradovanou verzi programu)
+2. instalovaná Java 8 nebo novější
 3. instalované VMD (pro zobrazení hotového proteinu)
 ### Spuštění simulace
 Pokud jsme s příkazovou řádkou v hlavní složce projektu (`PivotMovesSimulation`), můžeme se podívat do složky `input/vzory/` pomocí příkazu 
