@@ -359,256 +359,255 @@ public class SimSpace
      */
     public void makeTclScript() throws IOException {
         String header = 
-        """
-            #logfile vmd.log
-
-            proc addbond { p q } {
-              global b
-              set a [ lreplace $b $p $p [ lreplace [ lindex $b $p ] 0 -1 $q ] ]
-              lassign [ list $a ] b
-              set a [ lreplace $b $q $q [ lreplace [ lindex $b $q ] 0 -1 $p ] ]
-              lassign [ list $a ] b
-              }
-            proc remove_long_bonds { max_length } {
-              for { set i 0 } { $i < [ molinfo top get numatoms ] } { incr i } {
-                set bead [ atomselect top "index $i" ]
-                set bonds [ lindex [$bead getbonds] 0 ]
-                if { [ llength bonds ] > 0 } {
-                  set bonds_new {}
-                  set xyz [ lindex [$bead get {x y z}] 0 ]
-                  foreach j $bonds {
-                    set bead_to [ atomselect top "index $j" ]
-                    set xyz_to [ lindex [$bead_to get {x y z}] 0 ]
-                    if { [ vecdist $xyz $xyz_to ] < $max_length } {
-                      lappend bonds_new $j
-                      }
-                    }
-                  $bead setbonds [ list $bonds_new ]
-                  }
-                }
-              }
-            set s [atomselect top "all"]
-            set b {}
-            for {set i 0} {$i < [$s num]} {incr i} {
-              lappend b {}
-              }
-            
-            #for {set i 0} {$i < [$s num]} {incr i} {
-            #  addbond $i $i+1
-            #  }
-        """;
+        "#logfile vmd.log"+"\n"+
+        ""+"\n"+
+        "proc addbond { p q } {"+"\n"+
+        "    global b"+"\n"+
+        "    set a [ lreplace $b $p $p [ lreplace [ lindex $b $p ] 0 -1 $q ] ]"+"\n"+
+        "    lassign [ list $a ] b"+"\n"+
+        "    set a [ lreplace $b $q $q [ lreplace [ lindex $b $q ] 0 -1 $p ] ]"+"\n"+
+        "    lassign [ list $a ] b"+"\n"+
+        "}"+"\n"+
+        "proc remove_long_bonds { max_length } {"+"\n"+
+        "    for { set i 0 } { $i < [ molinfo top get numatoms ] } { incr i } {"+"\n"+
+        "        set bead [ atomselect top \"index $i\" ]"+"\n"+
+        "        set bonds [ lindex [$bead getbonds] 0 ]"+"\n"+
+        "        if { [ llength bonds ] > 0 } {"+"\n"+
+        "            set bonds_new {}"+"\n"+
+        "            set xyz [ lindex [$bead get {x y z}] 0 ]"+"\n"+
+        "            foreach j $bonds {"+"\n"+
+        "                set bead_to [ atomselect top \"index $j\" ]"+"\n"+
+        "                set xyz_to [ lindex [$bead_to get {x y z}] 0 ]"+"\n"+
+        "                if { [ vecdist $xyz $xyz_to ] < $max_length } {"+"\n"+
+        "                    lappend bonds_new $j"+"\n"+
+        "                }"+"\n"+
+        "            }"+"\n"+
+        "        $bead setbonds [ list $bonds_new ]"+"\n"+
+        "        }"+"\n"+
+        "    }"+"\n"+
+        "}"+"\n"+
+        "set s [atomselect top \"all\"]"+"\n"+
+        "set b {}"+"\n"+
+        "for {set i 0} {$i < [$s num]} {incr i} {"+"\n"+
+        "    lappend b {}"+"\n"+
+        "}"+"\n"+
+        ""+"\n"+
+        "#for {set i 0} {$i < [$s num]} {incr i} {"+"\n"+
+        "#    addbond $i $i+1"+"\n"+
+        "#    }"+"\n"+
+        ""+"\n"
+        ;
         String footer = 
-        """
-            $s setbonds $b
-            remove_long_bonds 5.0
-            
-            pbc set {1000 1000 1000 90.0 90.0 90.0} -all
-            # pbc box_draw
-            # pbc wrap -all
-            axes location off
-            color Display Background white
-            #color Display Background black
-            pbc wrap -center com
-            
-            #COLOR definitions
-            #------------------------------------------
-            #red
-            #ColorID 1
-            #silver
-            #color change rgb 6 0.300000 0.300000 0.40000
-            #blue
-            #color change rgb 0 0.100000 0.100000 1.000000
-            #green
-            #color change rgb 7 0.200000 0.550000 0.300000
-            #cyan
-            #color change rgb 10 0.250000 0.500000 0.750000
-            #orange
-            #color change rgb 3 1.000000 0.300000 0.000000
-            
-            #PARTICLE REPRESENTATIONS
-            #----------------------------------------
-            #all polymer segments
-            mol selection { name 'H:' or 'P:'}
-            mol material Opaque
-            mol color ColorID 6
-            mol representation Licorice 0.5 12 12
-            mol addrep top
-            
-            #    # Hydrofilní (H)
-            #    mol selection { name 'H:' }
-            #    mol color ColorID 0
-            #    mol material Opaque
-            #    mol representation CPK 3.81 1 20 1
-            #    mol addrep top
-            #
-            #    # Hydrofóbní (P)
-            #    mol selection { name 'P:' }
-            #    mol color ColorID 1
-            #    mol material Opaque
-            #    mol representation CPK 3.81 1 20 1
-            #    mol addrep top
-            
-            # FASTA aminoacid code
-            # A (Alanine)
-            mol selection { name 'A:' }
-            mol color ColorID 0
-            mol material Opaque
-            mol representation CPK 3.81 1 20 1
-            mol addrep top
-            # C (Cysteine)
-            mol selection { name 'C:' }
-            mol color ColorID 1
-            mol material Opaque
-            mol representation CPK 3.81 1 20 1
-            mol addrep top
-            # D (Aspartic acid)
-            mol selection { name 'D:' }
-            mol color ColorID 2
-            mol material Opaque
-            mol representation CPK 3.81 1 20 1
-            mol addrep top
-            # E (Glutamic acid)
-            mol selection { name 'E:' }
-            mol color ColorID 3
-            mol material Opaque
-            mol representation CPK 3.81 1 20 1
-            mol addrep top
-            # F (Phenylalanine)
-            mol selection { name 'F:' }
-            mol color ColorID 4
-            mol material Opaque
-            mol representation CPK 3.81 1 20 1
-            mol addrep top
-            # G (Glycine)
-            mol selection { name 'G:' }
-            mol color ColorID 5
-            mol material Opaque
-            mol representation CPK 3.81 1 20 1
-            mol addrep top
-            # H (Histidine)
-            mol selection { name 'H:' }
-            mol color ColorID 6
-            mol material Opaque
-            mol representation CPK 3.81 1 20 1
-            mol addrep top
-            # I (Isoleucine)
-            mol selection { name 'I:' }
-            mol color ColorID 7
-            mol material Opaque
-            mol representation CPK 3.81 1 20 1
-            mol addrep top
-            # K (Lysine)
-            mol selection { name 'K:' }
-            mol color ColorID 8
-            mol material Opaque
-            mol representation CPK 3.81 1 20 1
-            mol addrep top
-            # L (Leucine)
-            mol selection { name 'L:' }
-            mol color ColorID 9
-            mol material Opaque
-            mol representation CPK 3.81 1 20 1
-            mol addrep top
-            # M (Methionine)
-            mol selection { name 'M:' }
-            mol color ColorID 10
-            mol material Opaque
-            mol representation CPK 3.81 1 20 1
-            mol addrep top
-            # N (Asaparagine)
-            mol selection { name 'N:' }
-            mol color ColorID 11
-            mol material Opaque
-            mol representation CPK 3.81 1 20 1
-            mol addrep top
-            # P (Proline)
-            mol selection { name 'P:' }
-            mol color ColorID 12
-            mol material Opaque
-            mol representation CPK 3.81 1 20 1
-            mol addrep top
-            # Q (Glutamine)
-            mol selection { name 'Q:' }
-            mol color ColorID 13
-            mol material Opaque
-            mol representation CPK 3.81 1 20 1
-            mol addrep top
-            # R (Arginine)
-            mol selection { name 'R:' }
-            mol color ColorID 14
-            mol material Opaque
-            mol representation CPK 3.81 1 20 1
-            mol addrep top
-            # S (Serine)
-            mol selection { name 'S:' }
-            mol color ColorID 15
-            mol material Opaque
-            mol representation CPK 3.81 1 20 1
-            mol addrep top
-            # T (Threonine)
-            mol selection { name 'T:' }
-            mol color ColorID 16
-            mol material Opaque
-            mol representation CPK 3.81 1 20 1
-            mol addrep top
-            # V (Valine)
-            mol selection { name 'V:' }
-            mol color ColorID 17
-            mol material Opaque
-            mol representation CPK 3.81 1 20 1
-            mol addrep top
-            # W (Tryptophane)
-            mol selection { name 'W:' }
-            mol color ColorID 18
-            mol material Opaque
-            mol representation CPK 3.81 1 20 1
-            mol addrep top
-            # Y (Tyrosine)
-            mol selection { name 'Y:' }
-            mol color ColorID 19
-            mol material Opaque
-            mol representation CPK 3.81 1 20 1
-            mol addrep top
-            
-        """;
-        String rendering = """
-                            
-            #RENDERING
-            #------------------------------------------
+        "$s setbonds $b"+"\n"+
+        "remove_long_bonds 5.0"+"\n"+ 
+        "pbc set {1000 1000 1000 90.0 90.0 90.0} -all"+"\n"+
+        "# pbc box_draw"+"\n"+
+        "# pbc wrap -all"+"\n"+
+        "axes location off"+"\n"+
+        "color Display Background white"+"\n"+
+        "#color Display Background black"+"\n"+
+        "pbc wrap -center com"+"\n"+
+        ""+"\n"+
+        "#COLOR definitions"+"\n"+
+        "#------------------------------------------"+"\n"+
+        "#red"+"\n"+
+        "#ColorID 1"+"\n"+
+        "#silver"+"\n"+
+        "#color change rgb 6 0.300000 0.300000 0.40000"+"\n"+
+        "#blue"+"\n"+
+        "#color change rgb 0 0.100000 0.100000 1.000000"+"\n"+
+        "#green"+"\n"+
+        "#color change rgb 7 0.200000 0.550000 0.300000"+"\n"+
+        "#cyan"+"\n"+
+        "#color change rgb 10 0.250000 0.500000 0.750000"+"\n"+
+        "#orange"+"\n"+
+        "#color change rgb 3 1.000000 0.300000 0.000000"+"\n"+
+        ""+"\n"+
+        "#PARTICLE REPRESENTATIONS"+"\n"+
+        "#----------------------------------------"+"\n"+
+        "#all polymer segments"+"\n"+
+        "mol selection { name \'H:\' or \'P:\'}"+"\n"+
+        "mol material Opaque"+"\n"+
+        "mol color ColorID 6"+"\n"+
+        "mol representation Licorice 0.5 12 12"+"\n"+
+        "mol addrep top"+"\n"+
+        ""+"\n"+
+        "## Hydrofilní (H)"+"\n"+
+        "#mol selection { name \'H:\' }"+"\n"+
+        "#mol color ColorID 0"+"\n"+
+        "#mol material Opaque"+"\n"+
+        "#mol representation CPK 3.81 1 20 1"+"\n"+
+        "#mol addrep top"+"\n"+
+        "#"+"\n"+
+        "#    # Hydrofóbní (P)"+"\n"+
+        "#mol selection { name \'P:\' }"+"\n"+
+        "#mol color ColorID 1"+"\n"+
+        "#mol material Opaque"+"\n"+
+        "#mol representation CPK 3.81 1 20 1"+"\n"+
+        "#mol addrep top"+"\n"+
+        ""+"\n"+
+        "# FASTA aminoacid code"+"\n"+
+        "# A (Alanine)"+"\n"+
+        "mol selection { name \'A:\' }"+"\n"+
+        "mol color ColorID 0"+"\n"+
+        "mol material Opaque"+"\n"+
+        "mol representation CPK 3.81 1 20 1"+"\n"+
+        "mol addrep top"+"\n"+
+        "# C (Cysteine)"+"\n"+
+        "mol selection { name \'C:\' }"+"\n"+
+        "mol color ColorID 1"+"\n"+
+        "mol material Opaque"+"\n"+
+        "mol representation CPK 3.81 1 20 1"+"\n"+
+        "mol addrep top"+"\n"+
+        "# D (Aspartic acid)"+"\n"+
+        "mol selection { name \'D:\' }"+"\n"+
+        "mol color ColorID 2"+"\n"+
+        "mol material Opaque"+"\n"+
+        "mol representation CPK 3.81 1 20 1"+"\n"+
+        "mol addrep top"+"\n"+
+        "# E (Glutamic acid)"+"\n"+
+        "mol selection { name \'E:\' }"+"\n"+
+        "mol color ColorID 3"+"\n"+
+        "mol material Opaque"+"\n"+
+        "mol representation CPK 3.81 1 20 1"+"\n"+
+        "mol addrep top"+"\n"+
+        "# F (Phenylalanine)"+"\n"+
+        "mol selection { name \'F:\' }"+"\n"+
+        "mol color ColorID 4"+"\n"+
+        "mol material Opaque"+"\n"+
+        "mol representation CPK 3.81 1 20 1"+"\n"+
+        "mol addrep top"+"\n"+
+        "# G (Glycine)"+"\n"+
+        "mol selection { name \'G:\' }"+"\n"+
+        "mol color ColorID 5"+"\n"+
+        "mol material Opaque"+"\n"+
+        "mol representation CPK 3.81 1 20 1"+"\n"+
+        "mol addrep top"+"\n"+
+        "# H (Histidine)"+"\n"+
+        "mol selection { name \'H:\' }"+"\n"+
+        "mol color ColorID 6"+"\n"+
+        "mol material Opaque"+"\n"+
+        "mol representation CPK 3.81 1 20 1"+"\n"+
+        "mol addrep top"+"\n"+
+        "# I (Isoleucine)"+"\n"+
+        "mol selection { name \'I:\' }"+"\n"+
+        "mol color ColorID 7"+"\n"+
+        "mol material Opaque"+"\n"+
+        "mol representation CPK 3.81 1 20 1"+"\n"+
+        "mol addrep top"+"\n"+
+        "# K (Lysine)"+"\n"+
+        "mol selection { name \'K:\' }"+"\n"+
+        "mol color ColorID 8"+"\n"+
+        "mol material Opaque"+"\n"+
+        "mol representation CPK 3.81 1 20 1"+"\n"+
+        "mol addrep top"+"\n"+
+        "# L (Leucine)"+"\n"+
+        "mol selection { name \'L:\' }"+"\n"+
+        "mol color ColorID 9"+"\n"+
+        "mol material Opaque"+"\n"+
+        "mol representation CPK 3.81 1 20 1"+"\n"+
+        "mol addrep top"+"\n"+
+        "# M (Methionine)"+"\n"+
+        "mol selection { name \'M:\' }"+"\n"+
+        "mol color ColorID 10"+"\n"+
+        "mol material Opaque"+"\n"+
+        "mol representation CPK 3.81 1 20 1"+"\n"+
+        "mol addrep top"+"\n"+
+        "# N (Asaparagine)"+"\n"+
+        "mol selection { name \'N:\' }"+"\n"+
+        "mol color ColorID 11"+"\n"+
+        "mol material Opaque"+"\n"+
+        "mol representation CPK 3.81 1 20 1"+"\n"+
+        "mol addrep top"+"\n"+
+        "# P (Proline)"+"\n"+
+        "mol selection { name \'P:\' }"+"\n"+
+        "mol color ColorID 12"+"\n"+
+        "mol material Opaque"+"\n"+
+        "mol representation CPK 3.81 1 20 1"+"\n"+
+        "mol addrep top"+"\n"+
+        "# Q (Glutamine)"+"\n"+
+        "mol selection { name \'Q:\' }"+"\n"+
+        "mol color ColorID 13"+"\n"+
+        "mol material Opaque"+"\n"+
+        "mol representation CPK 3.81 1 20 1"+"\n"+
+        "mol addrep top"+"\n"+
+        "# R (Arginine)"+"\n"+
+        "mol selection { name \'R:\' }"+"\n"+
+        "mol color ColorID 14"+"\n"+
+        "mol material Opaque"+"\n"+
+        "mol representation CPK 3.81 1 20 1"+"\n"+
+        "mol addrep top"+"\n"+
+        "# S (Serine)"+"\n"+
+        "mol selection { name \'S:\' }"+"\n"+
+        "mol color ColorID 15"+"\n"+
+        "mol material Opaque"+"\n"+
+        "mol representation CPK 3.81 1 20 1"+"\n"+
+        "mol addrep top"+"\n"+
+        "# T (Threonine)"+"\n"+
+        "mol selection { name \'T:\' }"+"\n"+
+        "mol color ColorID 16"+"\n"+
+        "mol material Opaque"+"\n"+
+        "mol representation CPK 3.81 1 20 1"+"\n"+
+        "mol addrep top"+"\n"+
+        "# V (Valine)"+"\n"+
+        "mol selection { name \'V:\' }"+"\n"+
+        "mol color ColorID 17"+"\n"+
+        "mol material Opaque"+"\n"+
+        "mol representation CPK 3.81 1 20 1"+"\n"+
+        "mol addrep top"+"\n"+
+        "# W (Tryptophane)"+"\n"+
+        "mol selection { name \'W:\' }"+"\n"+
+        "mol color ColorID 18"+"\n"+
+        "mol material Opaque"+"\n"+
+        "mol representation CPK 3.81 1 20 1"+"\n"+
+        "mol addrep top"+"\n"+
+        "# Y (Tyrosine)"+"\n"+
+        "mol selection { name \'Y:\' }"+"\n"+
+        "mol color ColorID 19"+"\n"+
+        "mol material Opaque"+"\n"+
+        "mol representation CPK 3.81 1 20 1"+"\n"+
+        "mol addrep top"+"\n"+
+        ""+"\n"
+        ;
+        String rendering =
+        ""+"\n"+
+        "#RENDERING"+"\n"+
+        "#------------------------------------------"+"\n"+
+        ""+"\n"+
+        "#dispay settings"+"\n"+
+        "light 0 on"+"\n"+
+        "light 1 on"+"\n"+
+        "light 2 off"+"\n"+
+        "light 3 on"+"\n"+
+        "display cuedensity 0.15"+"\n"+
+        ""+"\n"+
+        "#zoom"+"\n"+
+        "#scale by 2.0"+"\n"+ 
+        ""+"\n"+
+        "# fast, just to check"+"\n"+
+        "#render TachyonInternal snapshot.tga display %s"+"\n"+
+        ""+"\n"+
+        "# better, but fast enough"+"\n"+
+        "#render TachyonInternal snapshot_one.tga"+"\n"+
+        "#exit"+"\n"+
+        ""+"\n"+
+        "# best resolution"+"\n"+
+        "render POV3 snapshot_one.pov"+"\n"+
+        ""+"\n"+
 
-            #dispay settings
-            light 0 on
-            light 1 on
-            light 2 off
-            light 3 on
-            display cuedensity 0.15
+        // This part is specially suited to each simulation (simulation name)
+        "#povray +W3600 +H3600 -Isnapshot_one.pov -O" + this.simulationName +".png +D +X +A +FN"+"\n"+
+        "povray +W3600 +H4400 -Isnapshot_one.pov -O" + this.simulationName +".png +D +X +A +FN"+"\n"+
+        "#povray +W2400 +H3600 -Isnapshot_one.pov -O" + this.simulationName +".png +D +X +A +FN"+"\n"+
 
-            #zoom
-            #scale by 2.0 
-
-            # fast, just to check
-            #render TachyonInternal snapshot.tga display %s
-
-            # better, but fast enough
-            #render TachyonInternal snapshot_one.tga
-            #exit
-
-            # best resolution
-            render POV3 snapshot_one.pov
-            """ +
-            
-            "#povray +W3600 +H3600 -Isnapshot_one.pov -O" + this.simulationName +".png +D +X +A +FN\n"+
-            "povray +W3600 +H4400 -Isnapshot_one.pov -O" + this.simulationName +".png +D +X +A +FN\n"+
-            "#povray +W2400 +H3600 -Isnapshot_one.pov -O" + this.simulationName +".png +D +X +A +FN\n"+
-
-            """
-            quit
-            # after povray treatment in konsole:
-            # mogrify -shave 600x1200 snapshot_one.png
-
-            exit
-
-        """;
+        ""+"\n"+
+        "quit"+"\n"+
+        "# after povray treatment in konsole:"+"\n"+
+        "# mogrify -shave 600x1200 snapshot_one.png"+"\n"+
+        ""+"\n"+
+        "exit"+"\n"
+        ;
+        
         // Bonds between the balls:
         StringBuilder bonds = new StringBuilder();
         for(int i = 0; i<this.nrOfBalls-1; i++){
