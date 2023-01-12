@@ -7,32 +7,34 @@
 [Repo na GitHubu](https://github.com/ForgoRew/PivotMoveSimulation)  
 
 ***Obsah:***
-- [Účel programu](#účel-programu)
-- [Popis základní struktury algoritmu simulace](#popis-základní-struktury-algoritmu-simulace)
-  - [Inicializace](#inicializace)
-  - [Běh](#běh)
-  - [Ukončení běhu a postprocessing](#ukončení-běhu-a-postprocessing)
-- [Součásti programu](#součásti-programu)
-  - [Datové struktury](#datové-struktury)
-- [Návod na použití](#návod-na-použití)
-  - [Vstupní soubory](#vstupní-soubory)
-    - [Umístění souboru a formát názvu](#umístění-souboru-a-formát-názvu)
-    - [Formát vstupního souboru](#formát-vstupního-souboru)
-    - [Soubor s AK specifickými epsilony](#soubor-s-ak-specifickými-epsilony)
-    - [Soubory s potenciálovými funkcemi](#soubory-s-potenciálovými-funkcemi)
-    - [Soubor s `FASTA` sekvencí simulovaného proteinu](#soubor-s-fasta-sekvencí-simulovaného-proteinu)
-    - [`XYZ` soubor pro možnost `--restore`](#xyz-soubor-pro-možnost---restore)
-  - [Spuštění programu](#spuštění-programu)
-  - [Výstupy](#výstupy)
-- [Výsledky](#výsledky)
-- [Zobrazení průběhu simulace ve VMD](#zobrazení-průběhu-simulace-ve-vmd)
-- [Tutoriál](#tutoriál)
-  - [Prerekvizity](#prerekvizity)
-  - [Spuštění simulace](#spuštění-simulace)
-  - [Využítí možnosti `--restore`](#využítí-možnosti---restore)
-  - [Zobrazení ve VMD](#zobrazení-ve-vmd)
-- [Možné problémy!](#možné-problémy)
-  - [Chybějící `/` u vstupní/výstupní složky](#chybějící--u-vstupnívýstupní-složky)
+- [PivotMoves](#pivotmoves)
+  - [Uživatelská dokumentace programu](#uživatelská-dokumentace-programu)
+  - [Účel programu](#účel-programu)
+  - [Popis základní struktury algoritmu simulace](#popis-základní-struktury-algoritmu-simulace)
+    - [Inicializace](#inicializace)
+    - [Běh](#běh)
+    - [Ukončení běhu a postprocessing](#ukončení-běhu-a-postprocessing)
+  - [Součásti programu](#součásti-programu)
+    - [Datové struktury](#datové-struktury)
+  - [Návod na použití](#návod-na-použití)
+    - [Vstupní soubory](#vstupní-soubory)
+      - [Umístění souboru a formát názvu](#umístění-souboru-a-formát-názvu)
+      - [Formát vstupního souboru](#formát-vstupního-souboru)
+      - [Soubor s AK specifickými epsilony](#soubor-s-ak-specifickými-epsilony)
+      - [Soubory s potenciálovými funkcemi](#soubory-s-potenciálovými-funkcemi)
+      - [Soubor s `FASTA` sekvencí simulovaného proteinu](#soubor-s-fasta-sekvencí-simulovaného-proteinu)
+      - [`XYZ` soubor pro možnost `--restore`](#xyz-soubor-pro-možnost---restore)
+    - [Spuštění programu](#spuštění-programu)
+    - [Výstupy](#výstupy)
+  - [Výsledky](#výsledky)
+  - [Zobrazení průběhu simulace ve VMD](#zobrazení-průběhu-simulace-ve-vmd)
+  - [Tutoriál](#tutoriál)
+    - [Prerekvizity](#prerekvizity)
+    - [Spuštění simulace](#spuštění-simulace)
+    - [Využítí možnosti `--restore`](#využítí-možnosti---restore)
+    - [Zobrazení ve VMD](#zobrazení-ve-vmd)
+  - [Možné problémy!](#možné-problémy)
+    - [Chybějící `/` u vstupní/výstupní složky](#chybějící--u-vstupnívýstupní-složky)
 
 ## Účel programu
 Tento program je určený pro testování potenciálových funkcí. Program využívá zjednodušený model proteinu (coarse-grained). Protein je zjednodušený na aminokyseliny reprezentované jako koule se středem v $C_\alpha$ uhlících a konstantním poloměrem. Jako návrh stavu je využito náhodné otočení části řetězce okolo pivota. K vyhodnocení návrhu stavu je použita metoda Monte Carlo.
@@ -307,15 +309,10 @@ Pro lepší pochopení je možné si přímo program vyzkoušet. Tutoriál je p�
 2. instalovaná Java 17 (respektive 8 pro downgradovanou verzi programu)
 3. instalované VMD (pro zobrazení hotového proteinu)
 ### Spuštění simulace
-Pokud jsme s příkazovou řádkou v hlavní složce projektu (`PivotMovesSimulation`), můžeme se podívat do složky `input/priklad/` pomocí příkazu 
+Pokud jsme s příkazovou řádkou v hlavní složce projektu (`PivotMovesSimulation`), můžeme se podívat do složky `input/vzory/` pomocí příkazu 
 
 ```sh
 ls input/vzory/
-```
-
-Pro vyčištění složky `data` před tutoriálem je možné spustit příkaz
-```sh
-rm -ri data/* # možnost 'i' je přidána kvůli bezpečnosti příkazu...
 ```
 
 Zde jsou připravené vstupní soubory pro simulaci:
@@ -326,6 +323,11 @@ Zde jsou připravené vstupní soubory pro simulaci:
 5. `priklad-retore.xyz` - ten využijeme až při další fázi tutoriálu.
 
 a další soubory, které se mohou hodit např. při simulaci HP modelu.
+
+Pro vyčištění složky `data` před tutoriálem je možné spustit příkaz
+```sh
+rm -ri data/* # možnost 'i' je přidána kvůli bezpečnosti příkazu...
+```
 
 Dále je potřeba vytvořit složku na výstupy programu, např. příkazem
 ```sh
