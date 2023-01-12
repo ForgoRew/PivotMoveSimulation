@@ -1,0 +1,31 @@
+==========
+Input file:
+{ 
+    "TypeOfSimulation": "Pivot-ChainMoves",
+    "TypeOfPotential": "Lennard-Jones",
+    "SimulationMatrixFileName": "AZ-Tanaka.csv",
+    "FASTAFileName": "all-AKs.fasta",
+    "BallDiameter": 5,
+    "NumberOfCycles": 40000,
+    "NumberOfSkippedCycles": 20000,
+    "EpsilonForNon-BondingPotential": 0.001,
+    "Temperature-Init": 500,
+    "Temperature-Final": 300,
+    "BendingPotentialTableName": "bendingPotential.csv",
+    "DihedralPotentialTableName": "dihedralPotential.csv",
+    "RotationRange": 0.5,
+    "LengthOfBond": 3.81,
+    "XYZFreq": 100,
+    "DATAFreq": 100,
+    "RenderTCL": false
+}
+==========
+Length of simulation:
+0 min, 0 sec
+==========
+Averages: Potential, Rg, Re, AR, MCAcc
+-472.549291,5.909222,9.295432,0.223850,0.144075
+==========
+Error estimations (block method):
+Cycle,Acc/Rej,Potential,BasicP,BendingP,DihedralP,Rg,Re,randomProb,boltzman
+x,x,0.053654,0.020252,0.018799,0.015234,0.000609,0.002025,0.000258
