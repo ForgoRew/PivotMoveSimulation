@@ -2,9 +2,10 @@
 ## Uživatelská dokumentace programu
 
 **Autor: Miloš Halda**  
-[Programátorská dokumentace.](Pages/index.html)  
 [Bakalářská práce](BakalarkaSimProgram.pdf)  
 [Repo na GitHubu](https://github.com/ForgoRew/PivotMoveSimulation)  
+[Stránky projektu (GitHub pages)](https://forgorew.github.io/PivotMoveSimulation/)  
+[Programátorská dokumentace (javadoc).](https://forgorew.github.io/PivotMoveSimulation/javadocs/com/molecular_java/package-summary.html)  
 
 ***Obsah:***
 - [PivotMoves](#pivotmoves)
@@ -276,7 +277,7 @@ Výstupní soubory je pak možné najít ve složce, kde běží program, nebo v
 
 Jejich název je prakticky stejný jako název vstupního souboru jen s jinými příponami. Pro naší simulaci bychom našli tyto soubory:
 ```txt
-[název simulace].csv # Obsahuje průměry.
+[název simulace].avg.csv # Obsahuje průměry.
 [název simulace].csv # Obsahuje data ze simulace.
 [název simulace].log # Výstupní soubor.
 [název simulace].xyz # Soubor souřadnic molekul v prostoru. Je možné je zobrazit např. v programu VMD.
