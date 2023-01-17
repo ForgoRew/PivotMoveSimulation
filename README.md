@@ -183,8 +183,6 @@ Soubory specifikované ve vstupním `JSON` souboru jako položky
 <!-- Non bonding LJ ... -->
 Speciálním případem je nevazebný potenciál. Pokud je ve vstupním souboru v položce `"TypeOfNonBondingPotential"` zvolena možnost `"lennardjones"`, program automaticky počítá s funkcí Lennard Jonesova potenciálu, jak byla specifikována v kapitole [Běh](#běh). Pokud je zvolena možnost `"table"`, je potřeba ještě specifikovat soubor pro hodnoty nevazebného potenciálu v položce `"NonBondingPotentialTableName"`. V tutoriálu je ukázáno, jak tuto moznost využít.
 
-<!-- TODO: Vyzkoušet tutoriál -->
-
 Při vytváření těchto souborů je potřeba mít na paměti, že bending potenciál je definován v intervalu $[0,\pi]$ a dihedrální potenciál v intervalu $[-\pi,\pi]$. Více o tomto problému je možné najít v mojí [bakalářské práci](BakalarkaSimProgram.pdf) v příslušných sekcích kapitoly "2 Metody".
 
 Samotné soubory mají následující formát:
@@ -326,7 +324,7 @@ Pro lepší pochopení je možné si přímo program vyzkoušet. Tutoriál je p�
 Pokud jsme s příkazovou řádkou v hlavní složce projektu (`PivotMovesSimulation`), můžeme se podívat do složky `input/vzory/` pomocí příkazu 
 
 ```sh
-ls input/vzory/
+ls -l input/vzory/
 ```
 
 Zde jsou připravené vstupní soubory pro simulaci:
@@ -334,7 +332,7 @@ Zde jsou připravené vstupní soubory pro simulaci:
 2. `all-aks.fasta`
 3. `bendingPotential.csv`
 4. `dihedralPotential.csv`
-5. `priklad-retore.xyz` - ten využijeme až při další fázi tutoriálu.
+5. `priklad-restore.xyz` - ten využijeme až při další fázi tutoriálu.
 
 a další soubory, které se mohou hodit např. při simulaci HP modelu.
 
@@ -367,7 +365,7 @@ Nyní ve výstupní složce uvidíme
 (např. pomocí příkazu)
 
 ```sh
-ls data/priklad
+ls -l data/priklad
 ```
 vytvořené tyto soubory:
 1. `priklad.avg.csv`

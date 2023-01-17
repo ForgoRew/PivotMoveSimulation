@@ -54,6 +54,18 @@ addbond 15 16
 addbond 16 17
 addbond 17 18
 addbond 18 19
+addbond 19 20
+addbond 20 21
+addbond 21 22
+addbond 22 23
+addbond 23 24
+addbond 24 25
+addbond 25 26
+addbond 26 27
+addbond 27 28
+addbond 28 29
+addbond 29 30
+addbond 30 31
 $s setbonds $b
 remove_long_bonds 5.0
 pbc set {1000 1000 1000 90.0 90.0 90.0} -all
