@@ -89,12 +89,6 @@ public class SimSpace
      * Only {@code Pivot-ChainMoves} is implemented now!
      */
     public String typeOfSimulation;
-    // Type of used potential is no longer in use
-    /** Defines which type of potential we want to use.
-     * However, only "Lennard-Jones" potential is realistic and
-     * useable now.
-     */
-    public String typeOfPotential;
     /**Mapping of AAs to index in potential matrix. */
     Hashtable<Character,Integer> aaCoding;
     /**A matrix of pairwise potentials between AAs. */
@@ -132,6 +126,20 @@ public class SimSpace
     public Double rangeOfAngleForRotation;
     /**Specifies how long are the bonds between the balls. */
     public Double lengthOfBond;
+
+    // Non-bonding potential:
+    /** Defines which type of non-bonding potential we want to use.
+     * In input json it is defined by "TypeOfNonBondingPotential" item.
+     * 
+     * Currently, there are these options:
+     * 1. "Lennard-Jones",
+     * 2. "table" (custom potential given in csv)
+     * 
+     * If "table" option is chosen, user has to define the path to such
+     * table in "NonBondingPotentialTableName" item of input json.
+     */
+    public String typeOfNonBondingPotential;
+    public Double[][] nonBondPotentialTable;
 
     // Bending angle:
     /** Constant for bending potential. */
@@ -232,7 +240,7 @@ public class SimSpace
         //typeOfSimulation = JSONInput.getString("TypeOfSimulation");
         //typeOfPotential = JSONInput.getString("TypeOfPotential");
 
-        // Matrix of potentials:
+        // Matrix of non bonding epsilons:
         String matrixfName = JSONInput.getString("SimulationMatrixFileName");
         BufferedReader matrixFile = new BufferedReader( new FileReader(new File(inputFolder+matrixfName)));
         // Read the 1letter codes of AAs:
@@ -265,10 +273,17 @@ public class SimSpace
         rangeOfAngleForRotation = JSONInput.getDouble("RotationRange");
         lengthOfBond = JSONInput.getDouble("LengthOfBond");
 
+        // Non-bonding potential
+        typeOfNonBondingPotential = JSONInput.getString("TypeOfNonBondingPotential");
+        if (typeOfNonBondingPotential.equals("table")){
+            // Set the table
+            String nonBondTableName = inputFolder + JSONInput.getString("NonBondingPotentialTableName");
+            nonBondPotentialTable = loadPotentialFromCSV(nonBondTableName);
+        } else if (!typeOfNonBondingPotential.equals("lennardjones")){
+            throw new OperationNotSupportedException("Unsupported type of potential was given. See the README.md please!");
+        }
+
         // Bending potential:
-        // Deprecated, parable function unused.
-        //bendingConst = JSONInput.getDouble("BendingPotentialConstant");
-        //bendingAngleOffsetCos = JSONInput.getDouble("BendingAngleOffset");
         String bendingTableName = inputFolder + JSONInput.getString("BendingPotentialTableName");
         bendingPotentialTable = loadPotentialFromCSV(bendingTableName);
 
@@ -646,6 +661,7 @@ public class SimSpace
             balls.get(i).coordinates = coordinates;
         }
     }
+    
     /**
      * Method which takes a filename of potential csv matrix as an argument
      * and gives a table with the values as the output.
@@ -661,22 +677,24 @@ public class SimSpace
         
         String line;
         ArrayList<Double> potential_list = new ArrayList<Double>(),
-                            radians_list = new ArrayList<Double>();
-        // Remove header.
+                            key_list = new ArrayList<Double>();
+        // Remove header:
         in_pot.readLine();
+
+        // Read the potential values
         while((line = in_pot.readLine()) != null){
             String[] values = line.split(",");
-            radians_list.add(Double.parseDouble(values[0]));
+            key_list.add(Double.parseDouble(values[0]));
             potential_list.add(Double.parseDouble(values[1]));
         }
 
         in_pot.close();
 
-        Double[] radians_array = new Double[radians_list.size()];
-        radians_array = radians_list.toArray(radians_array);
+        Double[] key_array = new Double[key_list.size()];
+        key_array = key_list.toArray(key_array);
         Double[] potential_array = new Double[potential_list.size()];
         potential_array = potential_list.toArray(potential_array);
         
-        return new Double[][]{radians_array, potential_array};
+        return new Double[][]{key_array, potential_array};
     }
 }

@@ -14,6 +14,7 @@
   - [Popis základní struktury algoritmu simulace](#popis-základní-struktury-algoritmu-simulace)
     - [Inicializace](#inicializace)
     - [Běh](#běh)
+      - [Výpočet potenciálu](#výpočet-potenciálu)
     - [Ukončení běhu a postprocessing](#ukončení-běhu-a-postprocessing)
   - [Součásti programu](#součásti-programu)
     - [Datové struktury](#datové-struktury)
@@ -34,13 +35,13 @@
     - [Spuštění simulace](#spuštění-simulace)
     - [Využítí možnosti `--restore`](#využítí-možnosti---restore)
     - [Zobrazení ve VMD](#zobrazení-ve-vmd)
+    - [Využití možnosti user-defined nevazebného potenciálu](#využití-možnosti-user-defined-nevazebného-potenciálu)
   - [Možné problémy!](#možné-problémy)
     - [Chybějící `/` u vstupní/výstupní složky](#chybějící--u-vstupnívýstupní-složky)
 
 ## Účel programu
 Tento program je určený pro testování potenciálových funkcí. Program využívá zjednodušený model proteinu (coarse-grained). Protein je zjednodušený na aminokyseliny reprezentované jako koule se středem v $C_\alpha$ uhlících a konstantním poloměrem. Jako návrh stavu je využito náhodné otočení části řetězce okolo pivota. K vyhodnocení návrhu stavu je použita metoda Monte Carlo.
-<!-- TODO: Asi bude brzy změna v LJ -->
-Program v současnosti využívá Lennard-Jonesův potenciál jako funkci pro nevazebný potenciál. Pro bending a dihedrální potenciál program využívá funkce získané pomocí Boltzmannovy inverze, nicméně přijme jakoukoli funkci v požadovaném formátu, viz sekce ["Vstupní soubory"](#vstupní-soubory). Program je také snadno uživatelsky přístupný pro člověka zvyklého pracovat s příkazovou řádkou a dostatečně jednoduchý, aby bylo možné jej dále vylepšovat a snadno upravovat. Program zaznamenává důležité údaje v simulaci a měří průměry a chyby u důležitých hodnot.
+Program v současnosti využívá buďto Lennard-Jonesův potenciál jako funkci pro nevazebný potenciál, nebo si může uživatel zvolit vlastní typ potenciálu. Pro bending a dihedrální potenciál program využívá funkce získané pomocí Boltzmannovy inverze, nicméně přijme jakoukoli funkci v požadovaném formátu, viz sekce ["Vstupní soubory"](#vstupní-soubory). Program je také snadno uživatelsky přístupný pro člověka zvyklého pracovat s příkazovou řádkou a dostatečně jednoduchý, aby bylo možné jej dále vylepšovat a snadno upravovat. Program zaznamenává důležité údaje v simulaci a měří průměry a chyby u důležitých hodnot.
 
 ## Popis základní struktury algoritmu simulace
 Simulace probíhá ve 3 fázích, iniciace, běh a ukončení běhu. 
@@ -58,6 +59,10 @@ Pomocí těchto veličin program vytvoří řetězec částic, který bude simul
 ### Běh
 Program poté provede simulaci typu Pivot-Moves, což je postup kombinující přístup Monte-Carlo pro přijímání nových stavů a generování nových stavů pomocí pivotové transformace daného řetězce. Program provede zadaný počet cyklů, během kterých si ukládá důležité údaje ze simulace.
 
+#### Výpočet potenciálu
+<!-- LJ table lennardjones ... -->
+Uživatel má možnost si zvolit hodnoty potenciálů pro jednotlivé hodnoty úhlů/vzdáleností jednotlivých reprezentací aminokyselin. Definovat hodnoty potenciálů je nezbytné pro bending a dihedrální potenciál. Nevazebný potenciál má 2 možnosti. Buďto je zvolena možnost jej spočítat pomocí Lennard-Jonesovy funkce, viz [bakalářská práce, sekce 2.3.1](BakalarkaSimProgram.pdf), nebo je zvolena možnost definovat hodnoty potenciálu v tabulce, podobně jako bending a dihedrální. Více viz ve specifikaci [vstupních souborů](#vstupní-soubory) a v [tutoriálu](#využití-možnosti-user-defined-nevazebného-potenciálu).
+
 ### Ukončení běhu a postprocessing
 Po provedení zadaného počtu cyklů program vyhodnotí relevantní průměry měřených veličin, zaznamená dobu běhu simulace a vypočítá errory. Vytvoří také výstupní (`log`) soubor s informacemi o simulaci.
 
@@ -65,7 +70,7 @@ Po provedení zadaného počtu cyklů program vyhodnotí relevantní průměry m
 Program se skládá z 10 tříd. Z programátorského hlediska jsou popsány blíž v technické dokumentaci (v EN). Představím je proto jen stručně z hlediska jejich použití v rámci programu.
 
 - ***App***
-  - hlavní třída s metodou main, volá ostatní funkce,
+  - hlavní třída s `main`, volá ostatní funkce,
   - také jsou v ní uloženy některé metody pro zaznamenávání a postprocessing dat.
   - obsahuje metodu ve které probíhá běh simulace (`pivotMovesSimulation`)
 - ***Ball***
@@ -86,10 +91,7 @@ Program se skládá z 10 tříd. Z programátorského hlediska jsou popsány bl�
 - ***StepVars***
   - objekty této třídy slouží pro ukládání veličin důležitých pro každý konkrétní krok běhu simulace.
 
-<!-- TODO: `dát názvy tříd a příponů do těchto znaků` -->
 Další informace viz dokumentace programu (vygenerovaná pomocí `javadoc`).
-
-<!-- TODO: vygenerovat dokumentaci a dát proklik na ní. -->
 
 ### Datové struktury
 Prakticky všechna data jsou většinu času uložena v textových souborech, kam se průběžně zapisují. V souborech jsou vstupní soubory (přípona .json, v případě tabulky s epsilony a potenciály přípona `.csv`), nezpracovaná data simulace (`.csv`), souřadnice molekul během simulace (`.xyz`), průměry veličin (`.avg.csv`) a výstupní soubor (`.log`), který obsahuje důležité údaje ze vstupu i z výsledků simulace (průměry, chyby a simulační čas). Ze vstupu jsou data uložena do proměnných a poté také jako parametry třídy Ball a především do objektu `SimSpace`. Objekt třídy SimSpace (v kódu zpravidla pojmenovaný jako `s`) hraje během simulace centrální roli, protože obsahuje všechny důležité parametry aktuálního stavu simulace a pomocí něj jsou tyto hodnoty předávány i metodám. Program má za účel simulaci libovolného množství molekul jednoho typu, které jsou reprezentovány objekty třídy Ball, v simulačním prostoru. Objekty třídy Ball jsou uloženy v objektu třídy `ArrayList` nazvaný `balls` a jsou atributem objektu `s` třídy SimSpace.
@@ -115,8 +117,6 @@ Název souboru: `32Gly.in`
 { 
     # Typ simulace -- v této verzi programu je na výběr pouze jedna možnost.
     "TypeOfSimulation": "Pivot-ChainMoves",
-    # Typ potenciálu. Jedna z těchto možností: ["Lennard-Jones", "Hard Spheres", "Square Well"]
-    "TypeOfPotential": "Lennard-Jones",
     # Název matice pro AK specifické hodnoty `epsilon`:
     "SimulationMatrixFileName": "AZ-Tanaka.csv",
     # Název souboru s `FASTA` sekvencí simulovaného proteinu
@@ -133,6 +133,12 @@ Název souboru: `32Gly.in`
     "Temperature-Init": 500,
     # Parametr pro simulované žíhání. Hodnota teploty v posledním cyklu simulace. Hodnota teploty se mění v průběhu simulace lineárně.
     "Temperature-Final": 300,
+    # Specifikovaný typ potenciálu, v současnosti jsou umožněny 2 možnosti:
+    # 1. "lennardjones" -> program počítá Lennard Jonesovu funkci,
+    # 2. "table" -> program využije tabulku s hodnotami potenciálů, která je specifikovaná v položce  "NonBondingPotentialTableName".
+    "TypeOfNonBondingPotential": "lennardjones",
+    # Pokud je v položce "TypeOfNonBondingPotential" hodnota "table", je nutné v této položce uvést název souboru s nevazebným potenciálem.
+    "NonBondingPotentialTableName": null,
     # Název souboru s bending potenciálem:
     "BendingPotentialTableName": "bendingPotential.csv",
     # Název souboru s dihedrálním potenciálem:
@@ -168,10 +174,18 @@ H,P
 
 Během testování programu byla využita [matice](input/vzory/AZ-Tanaka.csv) upravená z [Tanaky 1976](https://doi.org/10.1021/ma60054a013) (upravená tabulka III., více v [Bakalářce](BakalarkaSimProgram.pdf)). Protože se jedná o rozsáhlejší soubor, není zde vložena kvůli přehlednosti. Je možné ji najít ve [vzorové složce pro vstupní soubory](input/vzory/).
 
+Hodnoty "epsilon" jsou při výpočtu nevazebného potenciálu zohledněny jen pokud je využita možnost výpočtu pomocí Lennard Jonesovy funkce. Při využití tabulky s předpočítanými hodnotami se "epsilon" nezohledňuje.
+
 #### Soubory s potenciálovými funkcemi
 Soubory specifikované ve vstupním `JSON` souboru jako položky  
 `"BendingPotentialTableName"` a 
-`"DihedralPotentialTableName"` obsahují hodnoty potenciálů pro dané hodnoty úhlů. Při vytváření těchto souborů je potřeba mít na paměti, že bending potenciál je definován v intervalu $[0,\pi]$ a dihedrální potenciál v intervalu $[-\pi,\pi]$. Více o tomto problému je možné najít v mojí [bakalářské práci](BakalarkaSimProgram.pdf) v příslušných sekcích kapitoly "2 Metody".
+`"DihedralPotentialTableName"` obsahují hodnoty potenciálů pro dané hodnoty úhlů.
+<!-- Non bonding LJ ... -->
+Speciálním případem je nevazebný potenciál. Pokud je ve vstupním souboru v položce `"TypeOfNonBondingPotential"` zvolena možnost `"lennardjones"`, program automaticky počítá s funkcí Lennard Jonesova potenciálu, jak byla specifikována v kapitole [Běh](#běh). Pokud je zvolena možnost `"table"`, je potřeba ještě specifikovat soubor pro hodnoty nevazebného potenciálu v položce `"NonBondingPotentialTableName"`. V tutoriálu je ukázáno, jak tuto moznost využít.
+
+<!-- TODO: Vyzkoušet tutoriál -->
+
+Při vytváření těchto souborů je potřeba mít na paměti, že bending potenciál je definován v intervalu $[0,\pi]$ a dihedrální potenciál v intervalu $[-\pi,\pi]$. Více o tomto problému je možné najít v mojí [bakalářské práci](BakalarkaSimProgram.pdf) v příslušných sekcích kapitoly "2 Metody".
 
 Samotné soubory mají následující formát:
 ```csv
@@ -195,9 +209,9 @@ phi,U
 -2.7855694297628366,-8.847503625923641
 ```
 
-Celé soubory [`dihedralPotential.csv`](input/vzory/bendingPotential.csv) a [`bendingPotential.csv`](input/vzory/dihedralPotential.csv) jsou ve [vzorové složce vstupů (`/input/vzory/`)](input/vzory/).
+Soubor pro nevazebný potenciál má stejný formát, jen místo úhlu `phi` je v prvním sloupci uvedena hodnota vzdálenosti dvou kuliček (`r [Å]`).
 
-<!-- TODO: Otestovat prokliky na složky na GitHubu -->
+Celé soubory [`LJPotential.csv`](input/vzory/LJPotential.csv), [`dihedralPotential.csv`](input/vzory/bendingPotential.csv) a [`bendingPotential.csv`](input/vzory/dihedralPotential.csv) jsou ve [vzorové složce vstupů (`/input/vzory/`)](input/vzory/).
 
 #### Soubor s `FASTA` sekvencí simulovaného proteinu
 Soubor `FASTA` (položka `"FASTAFileName"` ve vstupním `JSON` souboru) obsahuje vstupní sekvenci aminokyselin. Je potřeba zkontrolovat, aby všechny uvedené značky aminokyselin byly také v headeru tabulky pro AK specifické hodnoty `epsilon`.
@@ -282,7 +296,6 @@ Jejich název je prakticky stejný jako název vstupního souboru jen s jinými 
 [název simulace].log # Výstupní soubor.
 [název simulace].xyz # Soubor souřadnic molekul v prostoru. Je možné je zobrazit např. v programu VMD.
 ```
-<!-- TODO: Dát opravenou verzi programu!! -->
 ## Výsledky
 Pro výsledky vizte kapitolu [5 Výsledky](BakalarkaSimProgram.pdf) v bakalářské práci.
 
@@ -394,6 +407,30 @@ Nyní můžeme výsledky naší simulace zobrazit. Toho dosáhneme buďto kliká
 vmd -f data/restore/priklad.xyz -e data/restore/priklad.tcl
 ```
 
+### Využití možnosti user-defined nevazebného potenciálu
+Pokud nechceme počítat nevazebný potenciál přímo jako Lennard-Jonesův potenciál, je možné ve vstupním souboru definovat tabulku s hodnotami potenciálu.
+
+Ve složce [input/vzory](input/vzory/) je předpřipravený vstupní soubor [`priklad-LJ-tabulka.json`](input/vzory/priklad-LJ-tabulka.json), který s touto možností počítá.
+
+V tomto souboru si všimněme změn ve 2 položkách oproti původnímu [`priklad.json`](input/vzory/priklad.json):
+
+```json
+    "TypeOfNonBondingPotential": "table",
+    "NonBondingPotentialTableName": "LJPotential.csv",
+```
+
+V položce `"NonBondingPotentialTableName"` (v souboru [`LJPotential.csv`](input/vzory/LJPotential.csv)) je definována tabulka s předpočítanými hodnotami nevazebného potenciálu. Pro tento příklad jsem zvolil Lennard Jonesův potenciál s cutoffem v hodnotách 4Å a 15Å. Uživatel si může samozřejmě tyto hodnoty upravit, jak potřebuje.
+
+Spuštění programu proběhne stejně, jako v prvním případě:
+```sh
+java -jar PMSimulation/PMSimulation.jar -i input/vzory/ -o data/priklad/ priklad-LJ-tabulka
+```
+
+Vidíme, že po doběhnutí simulace se vytvořili ve výstupní složce (`data/priklad/`) standardní výstupní soubory.
+
+**POZOR!**  
+Při vytváření souboru s hodnotami nevazebného potenciálu je potřeba počítat s tím, že nebudou využity hodnoty AK-specifických epsilonů, jak jsou definované v jejich tabulce. Epsilon je standardně zvolen jako hodnota v položce `"EpsilonForNon-BondingPotential"` vstupního souboru.
+
 ## Možné problémy!
 (A jejich řešení. Zatím jen jeden, dělám sbírku.)
 
@@ -421,3 +458,5 @@ Pro opravení stačí lomítko přidat:
 ```sh
 java -jar PMSimulation/PMSimulation.jar -i input/vzory/ -o data/priklad/ priklad
 ```
+
+**V případě, že v tomto README naleznete chybu mě prosím kontaktujte přes můj GitHub účet! Děkuji!**

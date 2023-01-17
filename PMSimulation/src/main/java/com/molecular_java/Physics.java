@@ -37,6 +37,17 @@ public class Physics
         return 4 * specificEpsilon * (Math.pow(sigma / distance, 12) - Math.pow(sigma / distance, 6));
     }
     /**
+     * Function for return of tabelated non bonding potential.
+     * @param s simulation space
+     * @param distance distance of the two balls
+     * @return potential from the given table according to distance of the two balls
+     */
+    public static Double tableNonBondPotential(SimSpace s, Double distance){
+        double tPotential = getPotentialFromTable(s.nonBondPotentialTable, distance);
+
+        return tPotential;
+    }
+    /**
      * Counts "Hard-Spheres potential". It is the simpliest
      * potential which gives {@code zero} if the particles do not touch
      * each other and infinity if they do touch each other.
@@ -185,21 +196,24 @@ public class Physics
             ball2 = balls.get(b2);
         Double distance = distanceOfTwoBalls(s, ball1, ball2);
 
-        /* No longer needed, only LJ potential is used currently...
-        switch (s.typeOfPotential)
+        switch (s.typeOfNonBondingPotential)
         {
-            case "Lennard-Jones":
+            case "lennardjones":
                 return lennardJonesPotential(s, ball1, ball2, distance);
+            // Hard Spheres and Square Well are not supported currently
+            /* 
             case "Hard Spheres":
                 return hardSpheresPotential(ball1.diameter, distance);
             case "Square Well":
                 throw new OperationNotSupportedException("Square Well potential is not supported.");
                 // return SquareWellPotential(s.epsilon, ball1.diameter, distance, s.lambda);
+            */
+            case "table":
+                return tableNonBondPotential(s, distance);
+
             default:
-                throw new OperationNotSupportedException("The input is wrong! Name of potential is not given properly!");
+                throw new OperationNotSupportedException("Improper type of non-bonding potential was given from the input file. Please see README.md!");
         }
-        */
-        return lennardJonesPotential(s, ball1, ball2, distance);
     }
     /**
      * Method counts a potential in a system represented by balls in list.
