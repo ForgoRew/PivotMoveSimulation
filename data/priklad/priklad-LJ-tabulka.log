@@ -3,7 +3,7 @@ Input file:
 { 
     "TypeOfSimulation": "Pivot-ChainMoves",
     "SimulationMatrixFileName": "AZ-Tanaka.csv",
-    "FASTAFileName": "32Gly.fasta",
+    "FASTAFileName": "all-AKs.fasta",
     "BallDiameter": 5,
     "NumberOfCycles": 40000,
     "NumberOfSkippedCycles": 20000,
@@ -22,11 +22,11 @@ Input file:
 }
 ==========
 Length of simulation:
-0 min, 1 sec
+0 min, 0 sec
 ==========
 Averages: Potential, Rg, Re, AR, MCAcc
--992.968524,7.253966,5.580319,0.137550,0.107000
+-613.843604,5.582420,9.485363,0.218350,0.167100
 ==========
 Error estimations (block method):
 Cycle,Acc/Rej,Potential,BasicP,BendingP,DihedralP,Rg,Re,randomProb,boltzman
-x,x,0.107412,0.055828,0.026567,0.025945,0.000718,0.000722,0.000220
+x,x,0.064445,0.033239,0.017519,0.014584,0.000582,0.001702,0.000218
