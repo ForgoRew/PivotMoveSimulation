@@ -1,7 +1,7 @@
 { 
     "TypeOfSimulation": "Pivot-ChainMoves",
     "SimulationMatrixFileName": "AZ-Tanaka.csv",
-    "FASTAFileName": "32Gly.fasta",
+    "FASTAFileName": "all-AKs.fasta",
     "BallDiameter": 5,
     "NumberOfCycles": 40000,
     "NumberOfSkippedCycles": 20000,
